@@ -1,10 +1,10 @@
 # Nuzlocke.r 🎮⚡
 
-*Comprehensive Pokemon Nuzlocke challenge tracker with real-time encounter management and team statistics*
+*Pokemon Nuzlocke planner featuring team optimization tools and AI-driven battle analysis *
 
 ## Overview
 
-Nuzlocke.r revolutionizes Pokemon Nuzlocke challenge tracking with route-based encounter management, real-time team statistics, and comprehensive run analytics. Built with modern Angular and Django technologies to provide seamless Pokemon tracking across multiple challenge runs.
+Nuzlocke.r is a Pokemon Nuzlocke challenge tracking with route-based encounter management, real-time team statistics, and comprehensive run analytics. Built with Angular and Django to provide seamless Pokemon tracking across multiple challenge runs.
 
 ![Nuzlocke.r Dashboard](./public/screenshots/dashboard.png)
 
@@ -164,5 +164,3 @@ npm run db:seed     # Seed initial data
 - **Nuzlocke Community** for the challenging ruleset that makes Pokemon games more engaging
 
 ---
-
-**Nuzlocke.r** - Pokemon Nuzlocke Tracker by Aawab
