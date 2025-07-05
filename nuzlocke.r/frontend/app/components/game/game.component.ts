@@ -1,5 +1,4 @@
 import { Component, OnInit, signal, computed, effect } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PokemonService } from '../../services/pokemon.service';
@@ -13,58 +12,68 @@ import { Pokemon, PokemonEncounter, Route, EncounterStatus } from '../../models/
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
-  readonly activeTab = signal<'game' | 'box' | 'grave' | 'nuzlocke' | 'routes' | 'bosses' | 'upcoming'>('game');
-  readonly showPokemonSelection = signal(false);
-  readonly selectedPokemon = signal<Pokemon | null>(null);
-  readonly pokemonDetails = signal<PokemonEncounter | null>(null);
-  readonly showPokemonDetails = signal(false);
-  readonly isLoading = signal(false);
-  
-  // Form data for new encounter
-  readonly newEncounter = signal({
-    pokemonId: 0,
+  // Make EncounterStatus available in template
+  readonly EncounterStatus = EncounterStatus;
+
+  // Signals for reactive state
+  private activeTabSignal = signal<'game' | 'box' | 'grave'>('game');
+  private sidebarTabSignal = signal<'nuzlocke' | 'routes' | 'bosses' | 'upcoming'>('nuzlocke');
+  private showPokemonSelectionSignal = signal<boolean>(false);
+  private selectedPokemonSignal = signal<Pokemon | null>(null);
+  private selectedRouteSignal = signal<Route | null>(null);
+  private newEncounterSignal = signal<Partial<PokemonEncounter>>({
     nickname: '',
     level: 5,
-    nature: '',
-    ability: '',
     status: EncounterStatus.ALIVE,
-    caught: false
+    nature: '',
+    location: ''
   });
 
-  // Data from service
+  // Team management
+  private teamPokemonSignal = signal<PokemonEncounter[]>([]);
+  private boxPokemonSignal = signal<PokemonEncounter[]>([]);
+  private routeEncountersSignal = signal<{[routeId: string]: PokemonEncounter}>({});
+
+  // Computed properties
+  readonly activeTab = this.activeTabSignal.asReadonly();
+  readonly sidebarTab = this.sidebarTabSignal.asReadonly();
+  readonly showPokemonSelection = this.showPokemonSelectionSignal.asReadonly();
+  readonly selectedPokemon = this.selectedPokemonSignal.asReadonly();
+  readonly selectedRoute = this.selectedRouteSignal.asReadonly();
+  readonly newEncounter = this.newEncounterSignal.asReadonly();
+  readonly teamPokemon = this.teamPokemonSignal.asReadonly();
+  readonly boxPokemon = this.boxPokemonSignal.asReadonly();
+  readonly routeEncounters = this.routeEncountersSignal.asReadonly();
+
+  // Service data (computed after constructor)
+  readonly currentRun = computed(() => this.pokemonService.currentRun());
+  readonly encounters = computed(() => this.pokemonService.encounters());
   readonly routes = computed(() => this.pokemonService.getRoutes());
   readonly natures = computed(() => this.pokemonService.getNatures());
-  readonly selectedRoute = computed(() => this.pokemonService.selectedRoute());
-  readonly encounters = computed(() => this.pokemonService.encounters());
   readonly loading = computed(() => this.pokemonService.loading());
-  
-  // Derived computed values
-  readonly currentRouteEncounters = computed(() => {
-    const route = this.selectedRoute();
-    if (!route) return [];
-    return this.pokemonService.getEncountersForRoute(route.id);
-  });
 
+  // Available Pokemon for current route
   readonly availablePokemonForRoute = computed(() => {
     const route = this.selectedRoute();
     if (!route) return [];
-    // For now, return a sample of popular Pokemon for the demo
-    return this.getSamplePokemonForRoute(route);
+    
+    // Return cached Pokemon if available
+    const cache = this.pokemonService.pokemonCache();
+    const availableIds = [1, 4, 7, 25, 129]; // Demo Pokemon IDs
+    
+    return availableIds
+      .map(id => cache.get(id))
+      .filter(pokemon => pokemon !== undefined) as Pokemon[];
   });
 
-  readonly alivePokemon = computed(() => this.pokemonService.aliveEncounters());
-  readonly deadPokemon = computed(() => this.pokemonService.deadEncounters());
-  readonly boxedPokemon = computed(() => this.pokemonService.boxedEncounters());
-
   constructor(
-    private router: Router,
     private pokemonService: PokemonService
   ) {
     // Effect to update form when route changes
     effect(() => {
       const route = this.selectedRoute();
       if (route) {
-        this.newEncounter.update(current => ({
+        this.newEncounterSignal.update(current => ({
           ...current,
           level: route.levelRange.min
         }));
@@ -73,170 +82,388 @@ export class GameComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // Initialize some sample Pokemon for demonstration
-    await this.loadSamplePokemon();
-  }
-
-  private async loadSamplePokemon(): Promise<void> {
-    try {
-      this.isLoading.set(true);
-      // Load some popular Pokemon for the demo
-      const sampleIds = [1, 4, 7, 25, 54, 104, 132, 133, 134, 135, 136, 196]; // Starter + popular Pokemon
-      await this.pokemonService.fetchMultiplePokemon(sampleIds);
-    } catch (error) {
-      console.error('Error loading sample Pokemon:', error);
-    } finally {
-      this.isLoading.set(false);
+    // Set initial selected route
+    const routes = this.routes();
+    if (routes.length > 0) {
+      this.selectedRouteSignal.set(routes[0]);
     }
-  }
 
-  private getSamplePokemonForRoute(route: Route): Pokemon[] {
-    // Return sample Pokemon based on route type
-    const cache = this.pokemonService.pokemonCache();
-    const allPokemon = Array.from(cache.values());
+    // Add immediate demo data (no API calls needed)
+    this.addImmediateDemoData();
     
-    if (allPokemon.length === 0) {
-      return [];
-    }
-
-    // Return different Pokemon based on route category
-    switch (route.category) {
-      case 'starter':
-        return allPokemon.filter(p => [1, 4, 7].includes(p.id)); // Starter Pokemon
-      case 'route':
-        return allPokemon.filter(p => [25, 54, 132].includes(p.id)); // Route Pokemon
-      case 'cave':
-        return allPokemon.filter(p => [104, 74, 95].includes(p.id)); // Cave Pokemon
-      default:
-        return allPokemon.slice(0, 6); // Return first 6 available
-    }
-  }
-
-  setActiveTab(tab: 'game' | 'box' | 'grave' | 'nuzlocke' | 'routes' | 'bosses' | 'upcoming'): void {
-    this.activeTab.set(tab);
-  }
-
-  selectRoute(route: Route): void {
-    this.pokemonService.setSelectedRoute(route);
-  }
-
-  showPokemonSelectionModal(): void {
-    this.showPokemonSelection.set(true);
-    this.resetNewEncounter();
-  }
-
-  hidePokemonSelectionModal(): void {
-    this.showPokemonSelection.set(false);
-    this.selectedPokemon.set(null);
-  }
-
-  selectPokemon(pokemon: Pokemon): void {
-    this.selectedPokemon.set(pokemon);
-    this.newEncounter.update(current => ({
-      ...current,
-      pokemonId: pokemon.id,
-      nickname: pokemon.name,
-      ability: pokemon.abilities[0] || 'Unknown'
-    }));
-  }
-
-  async addEncounter(): Promise<void> {
-    const route = this.selectedRoute();
-    const pokemon = this.selectedPokemon();
-    const encounterData = this.newEncounter();
+    // Then load real Pokemon data in the background
+    await this.initializeDemoData();
     
-    if (!route || !pokemon) return;
+    // Preload Pokemon for route selection
+    await this.preloadAvailablePokemon();
+  }
 
-    try {
-      // If Pokemon is not fully loaded, load it from PokeAPI
-      let fullPokemon = pokemon;
-      if (!fullPokemon.sprites || !fullPokemon.baseStats) {
-        fullPokemon = await this.pokemonService.fetchPokemonFromPokeApi(pokemon.id);
-      }
-
-      const encounter: PokemonEncounter = {
-        id: crypto.randomUUID(),
-        pokemonId: encounterData.pokemonId,
-        pokemon: fullPokemon,
-        nickname: encounterData.nickname || fullPokemon.name,
-        level: encounterData.level,
-        nature: encounterData.nature || 'Hardy',
-        ability: encounterData.ability || fullPokemon.abilities[0],
-        status: encounterData.status,
-        location: route.name,
-        route: route.id,
-        caught: encounterData.caught,
+  private addImmediateDemoData() {
+    // Create simple demo data without API calls for immediate display
+    const demoTeam: PokemonEncounter[] = [
+      {
+        id: 'demo-team-1',
+        pokemonId: 1,
+        pokemon: {
+          id: 1,
+          name: 'Bulbasaur',
+          types: ['Grass', 'Poison'],
+          sprites: {
+            front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+            front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+            back_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+            back_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+            official_artwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png'
+          },
+          baseStats: { hp: 45, attack: 49, defense: 49, specialAttack: 65, specialDefense: 65, speed: 45 },
+          abilities: ['Overgrow', 'Chlorophyll'],
+          height: 7,
+          weight: 69,
+          species: 'Seed Pokémon',
+          flavorText: 'A strange seed was planted on its back at birth.',
+          generation: 'generation-i'
+        },
+        nickname: 'Bulby',
+        level: 16,
+        status: EncounterStatus.ALIVE,
+        location: 'Starter*',
+        route: 'starter',
+        nature: 'Modest',
+        ability: 'Overgrow',
+        caught: true,
         dateEncountered: new Date()
-      };
+      },
+      {
+        id: 'demo-team-2',
+        pokemonId: 25,
+        pokemon: {
+          id: 25,
+          name: 'Pikachu',
+          types: ['Electric'],
+          sprites: {
+            front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
+            front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
+            back_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
+            back_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
+            official_artwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png'
+          },
+          baseStats: { hp: 35, attack: 55, defense: 40, specialAttack: 50, specialDefense: 50, speed: 90 },
+          abilities: ['Static', 'Lightning Rod'],
+          height: 4,
+          weight: 60,
+          species: 'Mouse Pokémon',
+          flavorText: 'When several of these Pokémon gather, their electricity could build and cause lightning storms.',
+          generation: 'generation-i'
+        },
+        nickname: 'Sparky',
+        level: 12,
+        status: EncounterStatus.ALIVE,
+        location: 'Route 101',
+        route: 'route-101',
+        nature: 'Jolly',
+        ability: 'Static',
+        caught: true,
+        dateEncountered: new Date()
+      }
+    ];
 
-      this.pokemonService.addEncounter(encounter);
-      this.hidePokemonSelectionModal();
-      this.resetNewEncounter();
+    // Demo box Pokemon
+    const demoBox: PokemonEncounter[] = [
+      {
+        id: 'demo-box-1',
+        pokemonId: 130,
+        pokemon: {
+          id: 130,
+          name: 'Gyarados',
+          types: ['Water', 'Flying'],
+          sprites: {
+            front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/130.png',
+            front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/130.png',
+            back_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/130.png',
+            back_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/130.png',
+            official_artwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/130.png'
+          },
+          baseStats: { hp: 95, attack: 125, defense: 79, specialAttack: 60, specialDefense: 100, speed: 81 },
+          abilities: ['Intimidate', 'Moxie'],
+          height: 65,
+          weight: 2350,
+          species: 'Atrocious Pokémon',
+          flavorText: 'Once it begins to rampage, a Gyarados will burn everything down.',
+          generation: 'generation-i'
+        },
+        nickname: 'Rage',
+        level: 20,
+        status: EncounterStatus.BOXED,
+        location: 'Cherrygrove City',
+        route: 'cherrygrove-city',
+        nature: 'Adamant',
+        ability: 'Intimidate',
+        caught: true,
+        dateEncountered: new Date()
+      }
+    ];
+
+    this.teamPokemonSignal.set(demoTeam);
+    this.boxPokemonSignal.set(demoBox);
+
+    // Demo route encounters
+    const routeEncounters = {
+      'starter': demoTeam[0],
+      'route-101': demoTeam[1],
+      'cherrygrove-city': demoBox[0]
+    };
+    this.routeEncountersSignal.set(routeEncounters);
+  }
+
+  private async initializeDemoData() {
+    // Demo team Pokemon
+    const bulbasaur = await this.pokemonService.fetchPokemonFromPokeApi(1);
+    const pikachu = await this.pokemonService.fetchPokemonFromPokeApi(25);
+    
+    const demoTeam: PokemonEncounter[] = [
+      {
+        id: 'team-1',
+        pokemonId: bulbasaur.id,
+        pokemon: bulbasaur,
+        nickname: 'Bulby',
+        level: 16,
+        status: EncounterStatus.ALIVE,
+        location: 'Starter*',
+        route: 'starter',
+        nature: 'Modest',
+        ability: bulbasaur.abilities[0] || 'Overgrow',
+        caught: true,
+        dateEncountered: new Date()
+      },
+      {
+        id: 'team-2',
+        pokemonId: pikachu.id,
+        pokemon: pikachu,
+        nickname: 'Sparky',
+        level: 12,
+        status: EncounterStatus.ALIVE,
+        location: 'Route 101',
+        route: 'route-101',
+        nature: 'Jolly',
+        ability: pikachu.abilities[0] || 'Static',
+        caught: true,
+        dateEncountered: new Date()
+      }
+    ];
+
+    // Demo box Pokemon
+    const gyarados = await this.pokemonService.fetchPokemonFromPokeApi(130);
+    const psyduck = await this.pokemonService.fetchPokemonFromPokeApi(54);
+    
+    const demoBox: PokemonEncounter[] = [
+      {
+        id: 'box-1',
+        pokemonId: gyarados.id,
+        pokemon: gyarados,
+        nickname: 'Gyarados',
+        level: 20,
+        status: EncounterStatus.BOXED,
+        location: 'Cherrygrove City',
+        route: 'cherrygrove-city',
+        nature: 'Adamant',
+        ability: gyarados.abilities[0] || 'Intimidate',
+        caught: true,
+        dateEncountered: new Date()
+      },
+      {
+        id: 'box-2',
+        pokemonId: psyduck.id,
+        pokemon: psyduck,
+        nickname: 'Duck',
+        level: 15,
+        status: EncounterStatus.BOXED,
+        location: 'Route 30',
+        route: 'route-30',
+        nature: 'Calm',
+        ability: psyduck.abilities[0] || 'Damp',
+        caught: true,
+        dateEncountered: new Date()
+      }
+    ];
+
+    this.teamPokemonSignal.set(demoTeam);
+    this.boxPokemonSignal.set(demoBox);
+
+    // Demo route encounters
+    const routeEncounters = {
+      'starter': demoTeam[0],
+      'route-101': demoTeam[1],
+      'cherrygrove-city': demoBox[0],
+      'route-30': demoBox[1]
+    };
+    this.routeEncountersSignal.set(routeEncounters);
+  }
+
+  private async preloadAvailablePokemon() {
+    const pokemonIds = [1, 4, 7, 25, 129, 130, 54, 41, 74, 19]; // Common Pokemon
+    try {
+      await this.pokemonService.fetchMultiplePokemon(pokemonIds);
     } catch (error) {
-      console.error('Error adding encounter:', error);
+      console.error('Error preloading Pokemon:', error);
     }
   }
 
-  viewPokemonDetails(encounter: PokemonEncounter): void {
-    this.pokemonDetails.set(encounter);
-    this.showPokemonDetails.set(true);
+  // Tab navigation
+  setActiveTab(tab: 'game' | 'box' | 'grave') {
+    this.activeTabSignal.set(tab);
   }
 
-  hidePokemonDetails(): void {
-    this.showPokemonDetails.set(false);
-    this.pokemonDetails.set(null);
+  setSidebarTab(tab: 'nuzlocke' | 'routes' | 'bosses' | 'upcoming') {
+    this.sidebarTabSignal.set(tab);
   }
 
-  updateEncounter(encounter: PokemonEncounter, field: string, value: any): void {
-    const updates = { [field]: value };
-    this.pokemonService.updateEncounter(encounter.id, updates);
+  // Route selection
+  selectRoute(route: Route) {
+    this.selectedRouteSignal.set(route);
   }
 
-  deleteEncounter(encounterId: string): void {
-    if (confirm('Are you sure you want to delete this encounter?')) {
-      this.pokemonService.updateEncounter(encounterId, { status: EncounterStatus.RELEASED });
-    }
+  // Pokemon selection modal
+  showPokemonSelectionModal() {
+    this.showPokemonSelectionSignal.set(true);
   }
 
-  resetNewEncounter(): void {
-    const route = this.selectedRoute();
-    this.newEncounter.set({
-      pokemonId: 0,
+  hidePokemonSelectionModal() {
+    this.showPokemonSelectionSignal.set(false);
+    this.selectedPokemonSignal.set(null);
+    this.newEncounterSignal.set({
       nickname: '',
-      level: route?.levelRange.min || 5,
-      nature: '',
-      ability: '',
+      level: 5,
       status: EncounterStatus.ALIVE,
-      caught: false
+      nature: '',
+      location: ''
     });
   }
 
-  goBackToMenu(): void {
-    this.router.navigate(['/']);
+  selectPokemon(pokemon: Pokemon) {
+    this.selectedPokemonSignal.set(pokemon);
+    this.newEncounterSignal.update(encounter => ({
+      ...encounter,
+      pokemon: pokemon,
+      nickname: pokemon.name,
+      location: this.selectedRoute()?.name || ''
+    }));
+  }
+
+  // Form updates
+  onNicknameChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.newEncounterSignal.update(encounter => ({
+      ...encounter,
+      nickname: target.value
+    }));
+  }
+
+  onLevelChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.newEncounterSignal.update(encounter => ({
+      ...encounter,
+      level: parseInt(target.value) || 5
+    }));
+  }
+
+  onStatusChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.newEncounterSignal.update(encounter => ({
+      ...encounter,
+      status: target.value as EncounterStatus
+    }));
+  }
+
+  onNatureChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.newEncounterSignal.update(encounter => ({
+      ...encounter,
+      nature: target.value
+    }));
+  }
+
+  // Encounter management
+  async addEncounter() {
+    const pokemon = this.selectedPokemon();
+    const encounter = this.newEncounter();
+    
+    if (!pokemon || !encounter.nickname || !encounter.level) {
+      return;
+    }
+
+    const newEncounter: PokemonEncounter = {
+      id: this.generateId(),
+      pokemonId: pokemon.id,
+      pokemon: pokemon,
+      nickname: encounter.nickname,
+      level: encounter.level,
+      status: encounter.status || EncounterStatus.ALIVE,
+      location: encounter.location || this.selectedRoute()?.name || '',
+      route: this.selectedRoute()?.id || '',
+      nature: encounter.nature || 'Hardy',
+      ability: pokemon.abilities[0] || 'Unknown',
+      caught: true,
+      dateEncountered: new Date()
+    };
+
+    // Add to appropriate list
+    if (newEncounter.status === EncounterStatus.ALIVE) {
+      this.teamPokemonSignal.update(team => [...team, newEncounter]);
+    } else {
+      this.boxPokemonSignal.update(box => [...box, newEncounter]);
+    }
+
+    // Update route encounters
+    const routeId = this.selectedRoute()?.id;
+    if (routeId) {
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [routeId]: newEncounter
+      }));
+    }
+
+    this.hidePokemonSelectionModal();
+  }
+
+  // Update encounter status
+  updateEncounterStatus(encounterId: string, newStatus: EncounterStatus) {
+    const updateInList = (list: PokemonEncounter[]) => 
+      list.map(e => e.id === encounterId ? { ...e, status: newStatus } : e);
+
+    this.teamPokemonSignal.update(updateInList);
+    this.boxPokemonSignal.update(updateInList);
+  }
+
+  // Move Pokemon between team and box
+  movePokemonToBox(encounterId: string) {
+    const pokemon = this.teamPokemon().find(p => p.id === encounterId);
+    if (pokemon) {
+      this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounterId));
+      this.boxPokemonSignal.update(box => [...box, { ...pokemon, status: EncounterStatus.BOXED }]);
+    }
+  }
+
+  movePokemonToTeam(encounterId: string) {
+    const pokemon = this.boxPokemon().find(p => p.id === encounterId);
+    if (pokemon && this.teamPokemon().length < 6) {
+      this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounterId));
+      this.teamPokemonSignal.update(team => [...team, { ...pokemon, status: EncounterStatus.ALIVE }]);
+    }
+  }
+
+  // Delete encounter
+  deleteEncounter(encounterId: string) {
+    this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounterId));
+    this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounterId));
+  }
+
+  // Utility methods
+  private generateId(): string {
+    return 'encounter-' + Math.random().toString(36).substr(2, 9);
   }
 
   getTypeColor(type: string): string {
-    const typeColors: Record<string, string> = {
-      'normal': 'type-normal',
-      'fire': 'type-fire',
-      'water': 'type-water',
-      'electric': 'type-electric',
-      'grass': 'type-grass',
-      'ice': 'type-ice',
-      'fighting': 'type-fighting',
-      'poison': 'type-poison',
-      'ground': 'type-ground',
-      'flying': 'type-flying',
-      'psychic': 'type-psychic',
-      'bug': 'type-bug',
-      'rock': 'type-rock',
-      'ghost': 'type-ghost',
-      'dragon': 'type-dragon',
-      'dark': 'type-dark',
-      'steel': 'type-steel',
-      'fairy': 'type-fairy'
-    };
-    return typeColors[type.toLowerCase()] || 'type-normal';
+    return this.pokemonService.getPokemonTypeColor(type);
   }
 
   getStatusColor(status: EncounterStatus): string {
@@ -250,108 +477,276 @@ export class GameComponent implements OnInit {
   }
 
   getStatColor(stat: number): string {
-    if (stat >= 100) return '#4ADE80'; // green
-    if (stat >= 80) return '#FDE047'; // yellow
-    if (stat >= 60) return '#FB923C'; // orange
-    if (stat >= 40) return '#F87171'; // red
-    return '#EF4444'; // dark red
+    return this.pokemonService.getStatColor(stat);
   }
 
   formatPokemonName(name: string): string {
-    return name.charAt(0).toUpperCase() + name.slice(1);
+    return this.pokemonService.formatPokemonName(name);
   }
 
-  updateNickname(value: string): void {
-    this.newEncounter.update(current => ({
-      ...current,
-      nickname: value
-    }));
-  }
-
-  updateLevel(value: number): void {
-    this.newEncounter.update(current => ({
-      ...current,
-      level: Math.max(1, Math.min(100, value))
-    }));
-  }
-
-  updateNature(value: string): void {
-    this.newEncounter.update(current => ({
-      ...current,
-      nature: value
-    }));
-  }
-
-  updateAbility(value: string): void {
-    this.newEncounter.update(current => ({
-      ...current,
-      ability: value
-    }));
-  }
-
-  updateStatus(value: EncounterStatus): void {
-    this.newEncounter.update(current => ({
-      ...current,
-      status: value
-    }));
-  }
-
-  updateCaught(value: boolean): void {
-    this.newEncounter.update(current => ({
-      ...current,
-      caught: value
-    }));
-  }
-
-  // Event handlers for form inputs
-  onNicknameChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.updateNickname(target.value);
-  }
-
-  onLevelChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.updateLevel(+target.value);
-  }
-
-  onNatureChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.updateNature(target.value);
-  }
-
-  onAbilityChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.updateAbility(target.value);
-  }
-
-  onStatusChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.updateStatus(target.value as EncounterStatus);
-  }
-
-  // Helper methods for Pokemon display
-  getPokemonSpriteUrl(pokemon: Pokemon, shiny: boolean = false): string {
-    if (pokemon.sprites) {
-      return shiny ? 
-        (pokemon.sprites.front_shiny || pokemon.sprites.front_default || '') :
-        (pokemon.sprites.front_default || '');
-    }
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
-  }
-
-  getPokemonBackgroundGradient(types: string[]): string {
-    const colors = types.map(type => this.pokemonService.getPokemonTypeColor(type));
-    if (colors.length === 1) {
-      return `linear-gradient(135deg, ${colors[0]}, ${colors[0]}dd)`;
-    }
-    return `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
-  }
-
+  // Track by functions
   trackByPokemonId(_: number, pokemon: Pokemon): number {
     return pokemon.id;
   }
 
   trackByEncounterId(_: number, encounter: PokemonEncounter): string {
     return encounter.id;
+  }
+
+  trackByRouteId(_: number, route: Route): string {
+    return route.id;
+  }
+
+  // Event handlers for route encounter updates
+  async onPokemonSelection(route: Route, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const pokemonId = parseInt(target.value);
+    
+    if (!pokemonId) return;
+    
+    // Fetch full Pokemon data
+    let pokemon: Pokemon;
+    try {
+      pokemon = await this.pokemonService.fetchPokemonFromPokeApi(pokemonId);
+    } catch (error) {
+      console.error('Error fetching Pokemon:', error);
+      return;
+    }
+    
+    // Create new encounter or update existing
+    const existingEncounter = this.routeEncounters()[route.id];
+    if (existingEncounter) {
+      // Update existing encounter
+      const updatedEncounter = { ...existingEncounter, pokemon: pokemon, pokemonId: pokemon.id };
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: updatedEncounter
+      }));
+    } else {
+      // Create new encounter
+      const newEncounter: PokemonEncounter = {
+        id: this.generateId(),
+        pokemonId: pokemon.id,
+        pokemon: pokemon,
+        nickname: pokemon.name,
+        level: route.levelRange?.min || 5,
+        status: EncounterStatus.ALIVE,
+        location: route.name,
+        route: route.id,
+        nature: 'Hardy',
+        ability: pokemon.abilities[0] || 'Unknown',
+        caught: true,
+        dateEncountered: new Date()
+      };
+      
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: newEncounter
+      }));
+      
+      // Add to team or box
+      if (newEncounter.status === EncounterStatus.ALIVE && this.teamPokemon().length < 6) {
+        this.teamPokemonSignal.update(team => [...team, newEncounter]);
+      } else {
+        this.boxPokemonSignal.update(box => [...box, newEncounter]);
+      }
+    }
+  }
+
+  onNicknameUpdate(route: Route, event: Event) {
+    const target = event.target as HTMLInputElement;
+    const encounter = this.routeEncounters()[route.id];
+    
+    if (encounter) {
+      const updatedEncounter = { ...encounter, nickname: target.value };
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: updatedEncounter
+      }));
+      
+      // Update in team or box arrays
+      this.updateEncounterInArrays(updatedEncounter);
+    }
+  }
+
+  onStatusUpdate(route: Route, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const encounter = this.routeEncounters()[route.id];
+    
+    if (encounter) {
+      const newStatus = target.value as EncounterStatus;
+      const updatedEncounter = { ...encounter, status: newStatus };
+      
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: updatedEncounter
+      }));
+      
+      // Move between team and box based on status
+      this.moveEncounterBasedOnStatus(updatedEncounter);
+    }
+  }
+
+  onNatureUpdate(route: Route, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const encounter = this.routeEncounters()[route.id];
+    
+    if (encounter) {
+      const updatedEncounter = { ...encounter, nature: target.value };
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: updatedEncounter
+      }));
+      
+      // Update in team or box arrays
+      this.updateEncounterInArrays(updatedEncounter);
+    }
+  }
+
+  // Helper methods
+  private updateEncounterInArrays(encounter: PokemonEncounter) {
+    // Update in team if exists
+    this.teamPokemonSignal.update(team => 
+      team.map(p => p.id === encounter.id ? encounter : p)
+    );
+    
+    // Update in box if exists
+    this.boxPokemonSignal.update(box => 
+      box.map(p => p.id === encounter.id ? encounter : p)
+    );
+  }
+
+  private moveEncounterBasedOnStatus(encounter: PokemonEncounter) {
+    // Remove from both arrays first
+    this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounter.id));
+    this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounter.id));
+    
+    // Add to appropriate array based on status
+    if (encounter.status === EncounterStatus.ALIVE && this.teamPokemon().length < 6) {
+      this.teamPokemonSignal.update(team => [...team, encounter]);
+    } else if (encounter.status === EncounterStatus.BOXED || 
+               (encounter.status === EncounterStatus.ALIVE && this.teamPokemon().length >= 6)) {
+      this.boxPokemonSignal.update(box => [...box, encounter]);
+    }
+    // For dead/released Pokemon, they remain only in route encounters
+  }
+
+  // Catch Pokemon from wild encounter
+  catchPokemon(route: Route) {
+    // Show Pokemon selection modal for this route
+    this.selectedRouteSignal.set(route);
+    this.showPokemonSelectionModal();
+  }
+
+  // Add encountered Pokemon to team or box
+  addCaughtPokemon(pokemon: Pokemon, route: Route, nickname: string = '', level: number = 5) {
+    const newEncounter: PokemonEncounter = {
+      id: this.generateId(),
+      pokemonId: pokemon.id,
+      pokemon: pokemon,
+      nickname: nickname || pokemon.name,
+      level: level,
+      status: EncounterStatus.ALIVE,
+      location: route.name,
+      route: route.id,
+      nature: 'Hardy',
+      ability: pokemon.abilities[0] || 'Unknown',
+      caught: true,
+      dateEncountered: new Date()
+    };
+
+    // Add to team if space available, otherwise to box
+    if (this.teamPokemon().length < 6) {
+      this.teamPokemonSignal.update(team => [...team, newEncounter]);
+    } else {
+      newEncounter.status = EncounterStatus.BOXED;
+      this.boxPokemonSignal.update(box => [...box, newEncounter]);
+    }
+
+    // Update route encounters
+    this.routeEncountersSignal.update(encounters => ({
+      ...encounters,
+      [route.id]: newEncounter
+    }));
+
+    return newEncounter;
+  }
+
+  // Kill Pokemon (mark as dead)
+  killPokemon(route: Route) {
+    const encounter = this.routeEncounters()[route.id];
+    if (encounter) {
+      const deadEncounter = { ...encounter, status: EncounterStatus.DEAD };
+      
+      // Update route encounters
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: deadEncounter
+      }));
+
+      // Remove from team/box
+      this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounter.id));
+      this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounter.id));
+    }
+  }
+
+  // Release Pokemon
+  releasePokemon(route: Route) {
+    const encounter = this.routeEncounters()[route.id];
+    if (encounter) {
+      const releasedEncounter = { ...encounter, status: EncounterStatus.RELEASED };
+      
+      // Update route encounters
+      this.routeEncountersSignal.update(encounters => ({
+        ...encounters,
+        [route.id]: releasedEncounter
+      }));
+
+      // Remove from team/box
+      this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounter.id));
+      this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounter.id));
+    }
+  }
+
+  // Handle form submission from Pokemon selection modal
+  onFormSubmit(pokemon: Pokemon, nickname: string, level: number, nature: string, ability: string) {
+    const route = this.selectedRouteSignal();
+    if (route && pokemon) {
+      const newEncounter = this.addCaughtPokemon(pokemon, route, nickname, level);
+      
+      // Update the encounter with additional details
+      const updatedEncounter = {
+        ...newEncounter,
+        nature: nature || 'Hardy',
+        ability: ability || pokemon.abilities[0] || 'Unknown'
+      };
+
+      // Update the signals
+      if (updatedEncounter.status === EncounterStatus.ALIVE) {
+        this.teamPokemonSignal.update(team => 
+          team.map(p => p.id === updatedEncounter.id ? updatedEncounter : p)
+        );
+      } else {
+        this.boxPokemonSignal.update(box => 
+          box.map(p => p.id === updatedEncounter.id ? updatedEncounter : p)
+        );
+      }
+
+      // Close modal
+      this.showPokemonSelectionSignal.set(false);
+      this.selectedRouteSignal.set(null);
+    }
+  }
+
+  // Get team slots (always show 6 slots)
+  getTeamSlots(): (PokemonEncounter | null)[] {
+    const team = this.teamPokemon();
+    const slots: (PokemonEncounter | null)[] = [];
+    
+    for (let i = 0; i < 6; i++) {
+      slots.push(team[i] || null);
+    }
+    
+    return slots;
   }
 } 
