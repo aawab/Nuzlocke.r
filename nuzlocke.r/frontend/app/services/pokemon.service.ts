@@ -8,7 +8,7 @@ import { POKEMON_DATA, ROUTE_DATA, NATURE_DATA } from '../data/pokemon.constants
   providedIn: 'root'
 })
 export class PokemonService {
-  private readonly apiUrl = 'http://localhost:3001/api';
+  private readonly apiUrl = 'http://localhost:8000/api';
   
   // Modern signals for reactive state management
   private currentRunSignal = signal<NuzlockeRun | null>(null);

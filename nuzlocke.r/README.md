@@ -36,12 +36,11 @@ A comprehensive web application for tracking Pokemon Nuzlocke challenge runs, in
 - **RxJS**: Reactive programming patterns
 
 ### Backend
-- **Node.js**: JavaScript runtime
-- **Express**: Web framework
-- **TypeScript**: Type-safe server development
-- **PostgreSQL**: Database management
-- **Helmet**: Security middleware
-- **CORS**: Cross-origin resource sharing
+- **Django REST Framework**: Python-based API
+  - Django 5.0 with REST Framework
+  - PostgreSQL with advanced features
+  - Built-in admin interface
+  - Robust ORM and migrations
 
 ### Development Tools
 - **Angular CLI**: Project scaffolding and build tools
@@ -52,7 +51,8 @@ A comprehensive web application for tracking Pokemon Nuzlocke challenge runs, in
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v18+)
+- Node.js (v18+) - for Angular frontend
+- Python (3.8+) - for Django backend
 - npm or yarn
 - PostgreSQL database
 
@@ -101,8 +101,9 @@ A comprehensive web application for tracking Pokemon Nuzlocke challenge runs, in
 # Terminal 1: Frontend (http://localhost:4200)
 npm run dev
 
-# Terminal 2: Backend (http://localhost:3001)
-npm run backend
+# Terminal 2: Django Backend (http://localhost:8000)
+cd backend
+python manage.py runserver
 ```
 
 ### Production Build

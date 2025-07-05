@@ -2,7 +2,7 @@
 
 **Pokemon Nuzlocke Tracker by Aawab**
 
-A comprehensive web application for tracking Pokemon Nuzlocke challenge runs. Built with modern Angular and Node.js technologies, featuring route-based encounter tracking, team management, and real-time statistics.
+A comprehensive web application for tracking Pokemon Nuzlocke challenge runs. Built with modern Angular and Django technologies, featuring route-based encounter tracking, team management, and real-time statistics.
 
 ## 🎮 Quick Start
 
