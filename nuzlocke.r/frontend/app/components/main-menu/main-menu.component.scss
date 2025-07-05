@@ -1,0 +1,12 @@
+/* Main menu specific styles */
+.menu-option {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+} 

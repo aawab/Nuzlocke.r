@@ -1,0 +1,46 @@
+/* Game component specific styles */
+.h-screen-minus-header {
+  height: calc(100vh - 80px);
+}
+
+.route-list {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.encounter-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.pokemon-selection-grid {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for webkit browsers */
+.route-list::-webkit-scrollbar,
+.pokemon-selection-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.route-list::-webkit-scrollbar-track,
+.pokemon-selection-grid::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.route-list::-webkit-scrollbar-thumb,
+.pokemon-selection-grid::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.route-list::-webkit-scrollbar-thumb:hover,
+.pokemon-selection-grid::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 

@@ -1,0 +1,44 @@
+{
+  "name": "nuzlocke.r",
+  "version": "1.0.0",
+  "description": "Pokemon Nuzlocke tracker application by Aawab",
+  "author": "Aawab",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "dev": "npm run start",
+    "backend": "cd backend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "db:migrate": "cd backend && npm run db:migrate",
+    "db:seed": "cd backend && npm run db:seed"
+  },
+  "prettier": {
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.0.5",
+    "@angular/cli": "^20.0.5",
+    "@angular/compiler-cli": "^20.0.0",
+    "typescript": "~5.8.2"
+  }
+}

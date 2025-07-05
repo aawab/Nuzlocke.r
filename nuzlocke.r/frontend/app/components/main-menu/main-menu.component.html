@@ -1,0 +1,40 @@
+<div class="min-h-screen bg-gray-900 flex items-center justify-center">
+  <div class="gameboy-screen p-8 max-w-md w-full mx-4">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">NUZLOCKE.R</h1>
+      <h2 class="text-lg font-bold text-gray-600 mb-2">Pokemon Nuzlocke Tracker</h2>
+      <p class="text-sm text-gray-500 mb-4">by Aawab</p>
+      <div class="w-12 h-12 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+        <span class="text-white font-bold">⚡</span>
+      </div>
+    </div>
+
+    <div class="space-y-4 mb-8">
+      <button (click)="continueGame()" class="btn-pokemon w-full text-lg py-3">
+        CONTINUE
+      </button>
+      <button (click)="newGame()" class="btn-pokemon w-full text-lg py-3">
+        NEW GAME
+      </button>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 text-center">
+      <div class="card-pokemon">
+        <div class="text-2xl font-bold text-gray-800">{{ totalEncounters() }}</div>
+        <div class="text-sm text-gray-600">Encounters</div>
+      </div>
+      <div class="card-pokemon">
+        <div class="text-2xl font-bold text-green-500">{{ totalAlive() }}</div>
+        <div class="text-sm text-gray-600">Alive</div>
+      </div>
+      <div class="card-pokemon">
+        <div class="text-2xl font-bold text-red-500">{{ totalDeaths() }}</div>
+        <div class="text-sm text-gray-600">Deaths</div>
+      </div>
+    </div>
+
+    <div class="text-center mt-8">
+      <p class="text-xs text-gray-600">{{ currentRun()?.game || 'Pokemon Storm Silver' }}</p>
+    </div>
+  </div>
+</div> 

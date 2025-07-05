@@ -1,0 +1,231 @@
+/* Global styles for Pokemon Nuzlocke Tracker */
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Courier New', monospace;
+  margin: 0;
+  padding: 0;
+}
+
+/* Component Styles */
+.btn-pokemon {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: bold;
+  border: 2px solid #1f2937;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-pokemon:hover {
+  background-color: #fde047;
+  color: #1f2937;
+}
+
+.btn-pokemon-secondary {
+  padding: 0.25rem 0.75rem;
+  background-color: #6b7280;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #1f2937;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-pokemon-secondary:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.card-pokemon {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid #9ca3af;
+  padding: 1rem;
+  margin: 0.5rem;
+}
+
+.input-pokemon, .select-pokemon {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border: 2px solid #9ca3af;
+  border-radius: 4px;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.input-pokemon:focus, .select-pokemon:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.gameboy-screen {
+  background-color: #e5e7eb;
+  border: 4px solid #9ca3af;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.route-item {
+  padding: 0.75rem;
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border-bottom: 1px solid #9ca3af;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.route-item:hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.route-item.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.sidebar {
+  width: 16rem;
+}
+
+/* Pokemon Status Colors */
+.status-alive {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-dead {
+  background-color: #ef4444;
+  color: white;
+}
+
+.status-boxed {
+  background-color: #fde047;
+  color: #1f2937;
+}
+
+.status-released {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.status-unknown {
+  background-color: #6b7280;
+  color: white;
+}
+
+/* Pokemon Type Colors */
+.type-normal { background-color: #a8a878; }
+.type-fire { background-color: #f08030; }
+.type-water { background-color: #6890f0; }
+.type-electric { background-color: #f8d030; }
+.type-grass { background-color: #78c850; }
+.type-ice { background-color: #98d8d8; }
+.type-fighting { background-color: #c03028; }
+.type-poison { background-color: #a040a0; }
+.type-ground { background-color: #e0c068; }
+.type-flying { background-color: #a890f0; }
+.type-psychic { background-color: #f85888; }
+.type-bug { background-color: #a8b820; }
+.type-rock { background-color: #b8a038; }
+.type-ghost { background-color: #705898; }
+.type-dragon { background-color: #7038f8; }
+.type-dark { background-color: #705848; }
+.type-steel { background-color: #b8b8d0; }
+.type-fairy { background-color: #ee99ac; }
+
+/* Layout Utilities */
+.min-h-screen { min-height: 100vh; }
+.flex { display: flex; }
+.flex-1 { flex: 1; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.w-full { width: 100%; }
+.w-12 { width: 3rem; }
+.w-16 { width: 4rem; }
+.h-12 { height: 3rem; }
+.h-16 { height: 4rem; }
+
+/* Spacing Utilities */
+.space-x-4 > * + * { margin-left: 1rem; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.gap-4 { gap: 1rem; }
+.gap-2 { gap: 0.5rem; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.text-center { text-align: center; }
+
+/* Margin Utilities */
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mt-8 { margin-top: 2rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mx-4 { margin-left: 1rem; margin-right: 1rem; }
+
+/* Padding Utilities */
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.pt-4 { padding-top: 1rem; }
+
+/* Size Utilities */
+.max-w-md { max-width: 28rem; }
+.max-w-2xl { max-width: 42rem; }
+
+/* Text Utilities */
+.text-4xl { font-size: 2.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-xl { font-size: 1.25rem; }
+.text-lg { font-size: 1.125rem; }
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.font-bold { font-weight: 700; }
+
+/* Border Utilities */
+.rounded { border-radius: 0.25rem; }
+.rounded-full { border-radius: 9999px; }
+.border-2 { border-width: 2px; }
+.border-t { border-top-width: 1px; }
+.border-blue-500 { border-color: #3b82f6; }
+.border-gray-400 { border-color: #9ca3af; }
+
+/* Color Utilities */
+.bg-blue-500 { background-color: #3b82f6; }
+.bg-gray-200 { background-color: #e5e7eb; }
+.bg-gray-700 { background-color: #374151; }
+.bg-gray-800 { background-color: #1f2937; }
+.bg-gray-900 { background-color: #111827; }
+.bg-black { background-color: #000000; }
+.bg-opacity-50 { background-color: rgba(0, 0, 0, 0.5); }
+
+.text-white { color: #ffffff; }
+.text-gray-800 { color: #1f2937; }
+.text-gray-600 { color: #6b7280; }
+.text-gray-300 { color: #d1d5db; }
+.text-red-500 { color: #ef4444; }
+.text-green-500 { color: #10b981; }
+
+/* Display Utilities */
+.hidden { display: none; }
+.cursor-pointer { cursor: pointer; }
+.fixed { position: fixed; }
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+.z-50 { z-index: 50; }
