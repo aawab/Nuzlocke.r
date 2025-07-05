@@ -1,183 +1,419 @@
-<div class="min-h-screen bg-gray-900 text-white">
-  <div class="flex">
-    <!-- Sidebar -->
-    <div class="sidebar bg-gray-800 p-4">
-      <div class="mb-6">
-        <button (click)="goBackToMenu()" class="btn-pokemon w-full">
-          ← Back to Menu
-        </button>
-      </div>
-      
-      <h2 class="text-xl font-bold mb-4">Routes</h2>
-      <div class="space-y-2">
-        <div *ngFor="let route of routes()" 
-             (click)="selectRoute(route)"
-             class="route-item"
-             [class.active]="selectedRoute()?.id === route.id">
-          <div class="font-bold">{{ route.name }}</div>
-          <div class="text-xs">Lv. {{ route.levelRange.min }}-{{ route.levelRange.max }}</div>
+<div class="min-h-screen flex">
+  <!-- Sidebar -->
+  <div class="sidebar p-6">
+    <div class="mb-6">
+      <button (click)="goBackToMenu()" class="btn-gameboy w-full">
+        ← Back to Menu
+      </button>
+    </div>
+    
+    <!-- Game Info -->
+    <div class="gameboy-screen p-4 mb-6">
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-3 pokemon-sprite">
+          <img 
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/196.png" 
+            alt="Storm Silver"
+            class="w-full h-full object-contain"
+          />
         </div>
+        <h3 class="font-bold text-lg mb-1 text-yellow-400">Storm Silver...</h3>
+        <p class="text-sm text-gray-400">Continue at {{ selectedRoute()?.name || 'Starter' }} →</p>
       </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="flex-1 p-6">
-      <div class="mb-6">
-        <h1 class="text-4xl font-bold mb-2">Nuzlocke.r</h1>
-        <p class="text-sm text-gray-400 mb-4">Pokemon Nuzlocke Tracker by Aawab</p>
-        
-        <!-- Tab Navigation -->
-        <div class="flex space-x-4 mb-6">
-          <button (click)="setActiveTab('game')" 
-                  [class]="activeTab() === 'game' ? 'btn-pokemon' : 'btn-pokemon-secondary'">
-            Game
-          </button>
-          <button (click)="setActiveTab('box')" 
-                  [class]="activeTab() === 'box' ? 'btn-pokemon' : 'btn-pokemon-secondary'">
-            Box
-          </button>
-          <button (click)="setActiveTab('grave')" 
-                  [class]="activeTab() === 'grave' ? 'btn-pokemon' : 'btn-pokemon-secondary'">
-            Grave
-          </button>
-        </div>
-      </div>
-
-      <!-- Game Tab Content -->
-      <div *ngIf="activeTab() === 'game'" class="gameboy-screen">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold">{{ selectedRoute()?.name || 'Select a Route' }}</h2>
-          <button *ngIf="selectedRoute()" 
-                  (click)="showPokemonSelectionModal()" 
-                  class="btn-pokemon">
-            Add Encounter
-          </button>
-        </div>
-        
-        <!-- Encounters Grid -->
-        <div class="grid grid-cols-1 gap-4">
-          <div *ngFor="let encounter of currentRouteEncounters()" class="card-pokemon">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-4">
-                <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                  <span class="text-xs font-bold">#{{ encounter.pokemon.id }}</span>
-                </div>
-                <div>
-                  <h3 class="font-bold">{{ encounter.nickname || encounter.pokemon.name }}</h3>
-                  <p class="text-sm">{{ encounter.pokemon.name }} - Lv. {{ encounter.level }}</p>
-                  <p class="text-xs">{{ encounter.nature }} - {{ encounter.ability }}</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center space-x-2">
-                <span class="px-2 py-1 rounded text-xs font-bold"
-                      [class]="getStatusColor(encounter.status)">
-                  {{ encounter.status }}
-                </span>
-                <button (click)="deleteEncounter(encounter.id)" 
-                        class="btn-pokemon-secondary text-xs">
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- No Encounters Message -->
-        <div *ngIf="currentRouteEncounters().length === 0 && selectedRoute()" 
-             class="text-center py-12">
-          <p class="text-lg mb-4">No encounters recorded for {{ selectedRoute()?.name }}</p>
-          <button (click)="showPokemonSelectionModal()" class="btn-pokemon">
-            Add Your First Encounter
-          </button>
-        </div>
-      </div>
-
-      <!-- Box Tab Content -->
-      <div *ngIf="activeTab() === 'box'" class="p-6">
-        <h2 class="text-2xl font-bold mb-6">Pokemon Box</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div *ngFor="let pokemon of boxedPokemon()" class="card-pokemon">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                <span class="text-xs font-bold">#{{ pokemon.pokemon.id }}</span>
-              </div>
-              <div>
-                <h3 class="font-bold">{{ pokemon.nickname }}</h3>
-                <p class="text-sm">{{ pokemon.pokemon.name }} - Lv. {{ pokemon.level }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Grave Tab Content -->
-      <div *ngIf="activeTab() === 'grave'" class="p-6">
-        <h2 class="text-2xl font-bold mb-6">Pokemon Graveyard</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div *ngFor="let pokemon of deadPokemon()" class="card-pokemon bg-gray-800 text-gray-300">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-gray-700 rounded flex items-center justify-center">
-                <span class="text-xs font-bold">#{{ pokemon.pokemon.id }}</span>
-              </div>
-              <div>
-                <h3 class="font-bold">{{ pokemon.nickname }}</h3>
-                <p class="text-sm">{{ pokemon.pokemon.name }} - Lv. {{ pokemon.level }}</p>
-                <p class="text-xs">{{ pokemon.location }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    
+    <!-- Navigation Tabs -->
+    <div class="tab-container mb-6">
+      <button 
+        (click)="setActiveTab('nuzlocke')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'nuzlocke'"
+      >
+        Nuzlocke
+      </button>
+      <button 
+        (click)="setActiveTab('routes')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'routes'"
+      >
+        Routes
+      </button>
+      <button 
+        (click)="setActiveTab('bosses')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'bosses'"
+      >
+        Bosses
+      </button>
+      <button 
+        (click)="setActiveTab('upcoming')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'upcoming'"
+      >
+        Upcoming
+      </button>
+    </div>
+    
+    <!-- Routes List -->
+    <div class="space-y-2">
+      <div *ngFor="let route of routes()" 
+           (click)="selectRoute(route)"
+           class="route-item"
+           [class.active]="selectedRoute()?.id === route.id">
+        <div class="font-bold">{{ route.name }}</div>
+        <div class="text-xs text-gray-400">Lv. {{ route.levelRange.min }}-{{ route.levelRange.max }}</div>
       </div>
     </div>
   </div>
 
-  <!-- Simple Pokemon Selection Modal -->
-  <div *ngIf="showPokemonSelection()" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-gray-200 rounded p-6 max-w-2xl w-full mx-4">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold text-gray-800">Select Pokemon</h3>
-        <button (click)="hidePokemonSelectionModal()" class="btn-pokemon-secondary">
-          Close
+  <!-- Main Content -->
+  <div class="flex-1 p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-3xl font-bold mb-1">{{ selectedRoute()?.name || 'Storm Silver Nuzlocke' }}</h1>
+        <p class="text-sm text-gray-400">Drag Pokémon from your box or click add to team 😊</p>
+      </div>
+      <div class="flex gap-2">
+        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+          <span class="text-xl">⚙️</span>
+        </div>
+        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+          <span class="text-xl">🔍</span>
+        </div>
+        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+          <span class="text-xl">ℹ️</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-container mb-6">
+      <button 
+        (click)="setActiveTab('game')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'game'"
+      >
+        🎮 Game
+      </button>
+      <button 
+        (click)="setActiveTab('box')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'box'"
+      >
+        📦 Box
+      </button>
+      <button 
+        (click)="setActiveTab('grave')" 
+        class="tab-button"
+        [class.active]="activeTab() === 'grave'"
+      >
+        🪦 Grave
+      </button>
+    </div>
+
+    <!-- Game Tab Content -->
+    <div *ngIf="activeTab() === 'game'" class="gameboy-screen p-6">
+      <!-- Action Button -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">{{ selectedRoute()?.name || 'Select a Route' }}</h2>
+        <button 
+          *ngIf="selectedRoute()" 
+          (click)="showPokemonSelectionModal()" 
+          class="btn-gameboy btn-primary"
+        >
+          Add Encounter
         </button>
       </div>
       
-      <div class="grid grid-cols-3 gap-2 mb-4">
-        <div *ngFor="let pokemon of availablePokemonForRoute()" 
-             (click)="selectPokemon(pokemon)"
-             class="p-3 rounded border-2 cursor-pointer"
-             [class]="selectedPokemon()?.id === pokemon.id ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-400'">
-          <div class="text-center">
-            <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center mx-auto mb-2">
-              <span class="text-xs font-bold">#{{ pokemon.id }}</span>
+      <!-- Encounters Grid -->
+      <div class="grid grid-3 gap-4" *ngIf="currentRouteEncounters().length > 0">
+        <div *ngFor="let encounter of currentRouteEncounters()" class="pokemon-card p-4">
+          <div class="flex items-center gap-4 mb-3">
+            <div class="pokemon-sprite">
+              <img 
+                [src]="encounter.pokemon.sprites.front_default || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + encounter.pokemon.id + '.png'"
+                [alt]="encounter.pokemon.name"
+                class="w-full h-full object-contain"
+                onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png'"
+              />
             </div>
-            <div class="text-xs font-bold">{{ pokemon.name }}</div>
+            <div class="flex-1">
+              <h3 class="font-bold text-lg">{{ encounter.nickname || encounter.pokemon.name }}</h3>
+              <p class="text-sm text-gray-400 capitalize">{{ encounter.pokemon.name }} - Lv. {{ encounter.level }}</p>
+              <div class="flex gap-2 mt-2">
+                <span 
+                  *ngFor="let type of encounter.pokemon.types" 
+                  class="pokemon-type type-{{type}}"
+                >
+                  {{ type }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Status and Actions -->
+          <div class="flex justify-between items-center">
+            <span class="status-badge status-{{encounter.status}}">
+              {{ encounter.status }}
+            </span>
+            <div class="flex gap-2">
+              <button 
+                (click)="viewPokemonDetails(encounter)" 
+                class="btn-gameboy btn-secondary text-xs"
+              >
+                View
+              </button>
+              <button 
+                (click)="deleteEncounter(encounter.id)" 
+                class="btn-gameboy btn-danger text-xs"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       </div>
       
-      <div *ngIf="selectedPokemon()" class="border-t pt-4">
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-sm font-bold mb-1">Nickname</label>
-            <input type="text" 
-                   [value]="newEncounter().nickname"
-                   (input)="onNicknameChange($event)"
-                   class="input-pokemon w-full">
+      <!-- No Encounters Message -->
+      <div *ngIf="currentRouteEncounters().length === 0 && selectedRoute()" 
+           class="text-center py-12">
+        <div class="pokemon-sprite w-32 h-32 mx-auto mb-4">
+          <img 
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png" 
+            alt="No Pokemon"
+            class="w-full h-full object-contain opacity-50"
+          />
+        </div>
+        <p class="text-lg mb-4">No encounters recorded for {{ selectedRoute()?.name }}</p>
+        <button (click)="showPokemonSelectionModal()" class="btn-gameboy btn-primary">
+          Add Your First Encounter
+        </button>
+      </div>
+    </div>
+
+    <!-- Box Tab Content -->
+    <div *ngIf="activeTab() === 'box'" class="gameboy-screen p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">Pokémon Box</h2>
+        <div class="flex gap-2">
+          <button class="btn-gameboy btn-secondary">🔄 Box</button>
+          <button class="btn-gameboy btn-secondary">👥 Team</button>
+          <button class="btn-gameboy btn-secondary">🎲 Hide stats</button>
+        </div>
+      </div>
+      
+      <!-- Filter Options -->
+      <div class="flex gap-4 mb-6">
+        <button class="btn-gameboy btn-secondary">❌ Clear</button>
+        <button class="btn-gameboy btn-secondary">👥 Team</button>
+        <button class="btn-gameboy btn-secondary">📊 Total</button>
+        <button class="btn-gameboy btn-secondary">🔥 Type</button>
+        <button class="btn-gameboy btn-secondary">❤️ Hp</button>
+      </div>
+      
+      <!-- Type Filter -->
+      <div class="flex gap-2 mb-6 flex-wrap">
+        <span class="pokemon-type type-normal">Normal</span>
+        <span class="pokemon-type type-fire">Fire</span>
+        <span class="pokemon-type type-water">Water</span>
+        <span class="pokemon-type type-electric">Electric</span>
+        <span class="pokemon-type type-grass">Grass</span>
+        <span class="pokemon-type type-ice">Ice</span>
+        <span class="pokemon-type type-fighting">Fighting</span>
+        <span class="pokemon-type type-poison">Poison</span>
+        <span class="pokemon-type type-ground">Ground</span>
+        <span class="pokemon-type type-flying">Flying</span>
+        <span class="pokemon-type type-psychic">Psychic</span>
+        <span class="pokemon-type type-bug">Bug</span>
+        <span class="pokemon-type type-rock">Rock</span>
+        <span class="pokemon-type type-ghost">Ghost</span>
+        <span class="pokemon-type type-dragon">Dragon</span>
+        <span class="pokemon-type type-dark">Dark</span>
+        <span class="pokemon-type type-steel">Steel</span>
+        <span class="pokemon-type type-fairy">Fairy</span>
+      </div>
+
+      <!-- Pokemon Cards Grid -->
+      <div class="grid grid-4 gap-4">
+        <div *ngFor="let pokemon of boxedPokemon()" class="pokemon-card p-4">
+          <div class="text-center mb-3">
+            <div class="pokemon-sprite mx-auto mb-2">
+              <img 
+                [src]="pokemon.pokemon.sprites.front_default || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + pokemon.pokemon.id + '.png'"
+                [alt]="pokemon.pokemon.name"
+                class="w-full h-full object-contain"
+                onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png'"
+              />
+            </div>
+            <h3 class="font-bold">{{ pokemon.nickname || pokemon.pokemon.name }}</h3>
+            <p class="text-sm text-gray-400 capitalize">{{ pokemon.pokemon.name }}</p>
+            <div class="text-2xl font-bold text-yellow-400 mb-2">{{ pokemon.level }}</div>
           </div>
           
-          <div>
-            <label class="block text-sm font-bold mb-1">Level</label>
-            <input type="number" 
-                   [value]="newEncounter().level"
-                   (input)="onLevelChange($event)"
-                   class="input-pokemon w-full">
+          <!-- Pokemon Stats -->
+          <div class="space-y-1 mb-3">
+            <div class="flex justify-between text-xs">
+              <span>HP</span>
+              <span>{{ pokemon.pokemon.baseStats.hp }}</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill" [style.width.%]="pokemon.pokemon.baseStats.hp"></div>
+            </div>
+            
+            <div class="flex justify-between text-xs">
+              <span>ATK</span>
+              <span>{{ pokemon.pokemon.baseStats.attack }}</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill" [style.width.%]="pokemon.pokemon.baseStats.attack"></div>
+            </div>
+            
+            <div class="flex justify-between text-xs">
+              <span>DEF</span>
+              <span>{{ pokemon.pokemon.baseStats.defense }}</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill" [style.width.%]="pokemon.pokemon.baseStats.defense"></div>
+            </div>
+            
+            <div class="flex justify-between text-xs">
+              <span>SPA</span>
+              <span>{{ pokemon.pokemon.baseStats.specialAttack }}</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill" [style.width.%]="pokemon.pokemon.baseStats.specialAttack"></div>
+            </div>
+            
+            <div class="flex justify-between text-xs">
+              <span>SPD</span>
+              <span>{{ pokemon.pokemon.baseStats.specialDefense }}</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill" [style.width.%]="pokemon.pokemon.baseStats.specialDefense"></div>
+            </div>
+            
+            <div class="flex justify-between text-xs">
+              <span>SPE</span>
+              <span>{{ pokemon.pokemon.baseStats.speed }}</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill" [style.width.%]="pokemon.pokemon.baseStats.speed"></div>
+            </div>
+          </div>
+          
+          <!-- Pokemon Types -->
+          <div class="flex gap-1 justify-center mb-3">
+            <span 
+              *ngFor="let type of pokemon.pokemon.types" 
+              class="pokemon-type type-{{type}}"
+            >
+              {{ type }}
+            </span>
+          </div>
+          
+          <!-- Met Location -->
+          <p class="text-xs text-center text-gray-400 mb-2">
+            Met in {{ pokemon.location }} | Info 🔗
+          </p>
+          
+          <!-- Status Icons -->
+          <div class="flex justify-center gap-2">
+            <div class="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center">
+              <span class="text-xs">💀</span>
+            </div>
+            <div class="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center">
+              <span class="text-xs">🔄</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grave Tab Content -->
+    <div *ngIf="activeTab() === 'grave'" class="gameboy-screen p-6">
+      <div class="text-center py-12">
+        <div class="pokemon-sprite w-32 h-32 mx-auto mb-4">
+          <img 
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/104.png" 
+            alt="Cubone"
+            class="w-full h-full object-contain opacity-50"
+          />
+        </div>
+        <h2 class="text-xl font-bold mb-4">The aesthetics of graveyard</h2>
+        <p class="text-gray-400">Your fallen Pokémon will be remembered here</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pokemon Selection Modal -->
+  <div *ngIf="showPokemonSelection()" class="modal-overlay">
+    <div class="modal-content max-w-4xl w-full">
+      <div class="modal-header">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold">Select Pokemon</h3>
+          <button (click)="hidePokemonSelectionModal()" class="btn-gameboy btn-secondary">
+            Close
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <div class="grid grid-4 gap-4 mb-6">
+          <div *ngFor="let pokemon of availablePokemonForRoute()" 
+               (click)="selectPokemon(pokemon)"
+               class="pokemon-card p-4 cursor-pointer"
+               [class.selected]="selectedPokemon()?.id === pokemon.id">
+            <div class="text-center">
+              <div class="pokemon-sprite mx-auto mb-2">
+                <img 
+                  [src]="pokemon.sprites.front_default || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + pokemon.id + '.png'"
+                  [alt]="pokemon.name"
+                  class="w-full h-full object-contain"
+                  onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png'"
+                />
+              </div>
+              <h4 class="font-bold capitalize">{{ pokemon.name }}</h4>
+              <p class="text-xs text-gray-400">#{{ pokemon.id }}</p>
+            </div>
           </div>
         </div>
         
-        <button (click)="addEncounter()" class="btn-pokemon">
-          Add Encounter
-        </button>
+        <div *ngIf="selectedPokemon()" class="border-t pt-6">
+          <div class="grid grid-2 gap-4 mb-6">
+            <div class="form-group">
+              <label class="form-label">Nickname</label>
+              <input 
+                type="text" 
+                [value]="newEncounter().nickname"
+                (input)="onNicknameChange($event)"
+                class="form-input"
+                placeholder="Enter nickname..."
+              />
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Level</label>
+              <input 
+                type="number" 
+                [value]="newEncounter().level"
+                (input)="onLevelChange($event)"
+                class="form-input"
+                min="1"
+                max="100"
+              />
+            </div>
+          </div>
+          
+          <div class="flex justify-end gap-4">
+            <button (click)="hidePokemonSelectionModal()" class="btn-gameboy btn-secondary">
+              Cancel
+            </button>
+            <button (click)="addEncounter()" class="btn-gameboy btn-primary">
+              Add Encounter
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

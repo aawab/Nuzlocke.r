@@ -1,40 +1,105 @@
-<div class="min-h-screen bg-gray-900 flex items-center justify-center">
-  <div class="gameboy-screen p-8 max-w-md w-full mx-4">
+<div class="min-h-screen flex items-center justify-center p-6">
+  <div class="gameboy-container p-8 max-w-2xl w-full">
+    <!-- Header Section -->
     <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-gray-800 mb-2">NUZLOCKE.R</h1>
-      <h2 class="text-lg font-bold text-gray-600 mb-2">Pokemon Nuzlocke Tracker</h2>
-      <p class="text-sm text-gray-500 mb-4">by Aawab</p>
-      <div class="w-12 h-12 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-        <span class="text-white font-bold">⚡</span>
+      <h1 class="pixel-font text-2xl text-center mb-2 text-gray-400">Pokémon</h1>
+      <h1 class="pokemon-title">NUZLOCKE</h1>
+      <h2 class="pixel-font text-lg text-center text-gray-400">tracker</h2>
+    </div>
+
+    <!-- Game Boy Screen -->
+    <div class="gameboy-screen p-8 mb-8">
+      <!-- Menu Options -->
+      <div class="space-y-4 mb-8">
+        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
+          <div class="flex items-center gap-4">
+            <div class="text-2xl">▶</div>
+            <span class="font-bold text-lg">Continue</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
+              <span class="text-xs">⚡</span>
+            </div>
+            <span class="text-sm">{{ totalEncounters() }} ⚡ {{ totalAlive() }}</span>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
+          <div class="flex items-center gap-4">
+            <div class="text-2xl">▶</div>
+            <span class="font-bold text-lg">New Game</span>
+          </div>
+          <div class="pokemon-sprite w-16 h-16">
+            <img 
+              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/54.png" 
+              alt="Psyduck"
+              class="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
+          <div class="flex items-center gap-4">
+            <div class="text-2xl">▶</div>
+            <span class="font-bold text-lg">Load Game</span>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
+          <div class="flex items-center gap-4">
+            <div class="text-2xl">▶</div>
+            <span class="font-bold text-lg">Guides</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-4 justify-center">
+        <button 
+          (click)="continueGame()" 
+          class="btn-gameboy btn-primary flex-1"
+          [disabled]="totalEncounters() === 0"
+        >
+          Continue
+        </button>
+        <button 
+          (click)="newGame()" 
+          class="btn-gameboy btn-secondary flex-1"
+        >
+          New Game
+        </button>
       </div>
     </div>
 
-    <div class="space-y-4 mb-8">
-      <button (click)="continueGame()" class="btn-pokemon w-full text-lg py-3">
-        CONTINUE
-      </button>
-      <button (click)="newGame()" class="btn-pokemon w-full text-lg py-3">
-        NEW GAME
-      </button>
-    </div>
-
-    <div class="grid grid-cols-3 gap-4 text-center">
-      <div class="card-pokemon">
-        <div class="text-2xl font-bold text-gray-800">{{ totalEncounters() }}</div>
-        <div class="text-sm text-gray-600">Encounters</div>
+    <!-- Footer Info -->
+    <div class="text-center">
+      <p class="text-sm text-gray-500 mb-2">
+        Keep track of your Pokémon encounters across multiple Nuzlocke runs, and prepare for<br>
+        Gym battles and Rival fights so you never wipe again! Get insights into team match ups,<br>
+        compare stat blocks and get detail on Gym movesets & abilities.
+      </p>
+      
+      <!-- Social Icons -->
+      <div class="flex justify-center gap-4 mb-4">
+        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
+          <span class="text-xs">🗑</span>
+        </div>
+        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
+          <span class="text-xs">📱</span>
+        </div>
+        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
+          <span class="text-xs">💬</span>
+        </div>
       </div>
-      <div class="card-pokemon">
-        <div class="text-2xl font-bold text-green-500">{{ totalAlive() }}</div>
-        <div class="text-sm text-gray-600">Alive</div>
+      
+      <!-- Attribution -->
+      <div class="text-center">
+        <p class="text-sm text-gray-500">Made with <span class="text-red-500">❤</span> by <strong>Aawab</strong></p>
+        <p class="text-xs text-gray-600 mt-2">
+          All content & design © Pokémon Nuzlocke Tracker, 2024-2025. <a href="#" class="text-blue-400 hover:underline">Privacy Policy</a>. <a href="#" class="text-blue-400 hover:underline">Credits</a>.<br>
+          Pokémon images & names © 1995-2024 Nintendo/Creatures Inc./GAME FREAK inc. TM
+        </p>
       </div>
-      <div class="card-pokemon">
-        <div class="text-2xl font-bold text-red-500">{{ totalDeaths() }}</div>
-        <div class="text-sm text-gray-600">Deaths</div>
-      </div>
-    </div>
-
-    <div class="text-center mt-8">
-      <p class="text-xs text-gray-600">{{ currentRun()?.game || 'Pokemon Storm Silver' }}</p>
     </div>
   </div>
 </div> 

@@ -13,9 +13,12 @@ import { Pokemon, PokemonEncounter, Route, EncounterStatus } from '../../models/
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
-  readonly activeTab = signal<'game' | 'box' | 'grave'>('game');
+  readonly activeTab = signal<'game' | 'box' | 'grave' | 'nuzlocke' | 'routes' | 'bosses' | 'upcoming'>('game');
   readonly showPokemonSelection = signal(false);
   readonly selectedPokemon = signal<Pokemon | null>(null);
+  readonly pokemonDetails = signal<PokemonEncounter | null>(null);
+  readonly showPokemonDetails = signal(false);
+  readonly isLoading = signal(false);
   
   // Form data for new encounter
   readonly newEncounter = signal({
@@ -30,10 +33,10 @@ export class GameComponent implements OnInit {
 
   // Data from service
   readonly routes = computed(() => this.pokemonService.getRoutes());
-  readonly pokemon = computed(() => this.pokemonService.getPokemon());
   readonly natures = computed(() => this.pokemonService.getNatures());
   readonly selectedRoute = computed(() => this.pokemonService.selectedRoute());
   readonly encounters = computed(() => this.pokemonService.encounters());
+  readonly loading = computed(() => this.pokemonService.loading());
   
   // Derived computed values
   readonly currentRouteEncounters = computed(() => {
@@ -45,7 +48,8 @@ export class GameComponent implements OnInit {
   readonly availablePokemonForRoute = computed(() => {
     const route = this.selectedRoute();
     if (!route) return [];
-    return this.pokemon().filter(p => route.pokemonPool.includes(p.id));
+    // For now, return a sample of popular Pokemon for the demo
+    return this.getSamplePokemonForRoute(route);
   });
 
   readonly alivePokemon = computed(() => this.pokemonService.aliveEncounters());
@@ -68,11 +72,47 @@ export class GameComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    // All data is now computed, no need for manual subscriptions
+  async ngOnInit(): Promise<void> {
+    // Initialize some sample Pokemon for demonstration
+    await this.loadSamplePokemon();
   }
 
-  setActiveTab(tab: 'game' | 'box' | 'grave'): void {
+  private async loadSamplePokemon(): Promise<void> {
+    try {
+      this.isLoading.set(true);
+      // Load some popular Pokemon for the demo
+      const sampleIds = [1, 4, 7, 25, 54, 104, 132, 133, 134, 135, 136, 196]; // Starter + popular Pokemon
+      await this.pokemonService.fetchMultiplePokemon(sampleIds);
+    } catch (error) {
+      console.error('Error loading sample Pokemon:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  private getSamplePokemonForRoute(route: Route): Pokemon[] {
+    // Return sample Pokemon based on route type
+    const cache = this.pokemonService.pokemonCache();
+    const allPokemon = Array.from(cache.values());
+    
+    if (allPokemon.length === 0) {
+      return [];
+    }
+
+    // Return different Pokemon based on route category
+    switch (route.category) {
+      case 'starter':
+        return allPokemon.filter(p => [1, 4, 7].includes(p.id)); // Starter Pokemon
+      case 'route':
+        return allPokemon.filter(p => [25, 54, 132].includes(p.id)); // Route Pokemon
+      case 'cave':
+        return allPokemon.filter(p => [104, 74, 95].includes(p.id)); // Cave Pokemon
+      default:
+        return allPokemon.slice(0, 6); // Return first 6 available
+    }
+  }
+
+  setActiveTab(tab: 'game' | 'box' | 'grave' | 'nuzlocke' | 'routes' | 'bosses' | 'upcoming'): void {
     this.activeTab.set(tab);
   }
 
@@ -96,35 +136,55 @@ export class GameComponent implements OnInit {
       ...current,
       pokemonId: pokemon.id,
       nickname: pokemon.name,
-      ability: pokemon.abilities[0]
+      ability: pokemon.abilities[0] || 'Unknown'
     }));
   }
 
-  addEncounter(): void {
+  async addEncounter(): Promise<void> {
     const route = this.selectedRoute();
     const pokemon = this.selectedPokemon();
     const encounterData = this.newEncounter();
     
     if (!route || !pokemon) return;
 
-    const encounter: PokemonEncounter = {
-      id: crypto.randomUUID(),
-      pokemonId: encounterData.pokemonId,
-      pokemon: pokemon,
-      nickname: encounterData.nickname || pokemon.name,
-      level: encounterData.level,
-      nature: encounterData.nature,
-      ability: encounterData.ability,
-      status: encounterData.status,
-      location: route.name,
-      route: route.id,
-      caught: encounterData.caught,
-      dateEncountered: new Date()
-    };
+    try {
+      // If Pokemon is not fully loaded, load it from PokeAPI
+      let fullPokemon = pokemon;
+      if (!fullPokemon.sprites || !fullPokemon.baseStats) {
+        fullPokemon = await this.pokemonService.fetchPokemonFromPokeApi(pokemon.id);
+      }
 
-    this.pokemonService.addEncounter(encounter);
-    this.hidePokemonSelectionModal();
-    this.resetNewEncounter();
+      const encounter: PokemonEncounter = {
+        id: crypto.randomUUID(),
+        pokemonId: encounterData.pokemonId,
+        pokemon: fullPokemon,
+        nickname: encounterData.nickname || fullPokemon.name,
+        level: encounterData.level,
+        nature: encounterData.nature || 'Hardy',
+        ability: encounterData.ability || fullPokemon.abilities[0],
+        status: encounterData.status,
+        location: route.name,
+        route: route.id,
+        caught: encounterData.caught,
+        dateEncountered: new Date()
+      };
+
+      this.pokemonService.addEncounter(encounter);
+      this.hidePokemonSelectionModal();
+      this.resetNewEncounter();
+    } catch (error) {
+      console.error('Error adding encounter:', error);
+    }
+  }
+
+  viewPokemonDetails(encounter: PokemonEncounter): void {
+    this.pokemonDetails.set(encounter);
+    this.showPokemonDetails.set(true);
+  }
+
+  hidePokemonDetails(): void {
+    this.showPokemonDetails.set(false);
+    this.pokemonDetails.set(null);
   }
 
   updateEncounter(encounter: PokemonEncounter, field: string, value: any): void {
@@ -133,7 +193,9 @@ export class GameComponent implements OnInit {
   }
 
   deleteEncounter(encounterId: string): void {
-    this.pokemonService.updateEncounter(encounterId, { status: EncounterStatus.RELEASED });
+    if (confirm('Are you sure you want to delete this encounter?')) {
+      this.pokemonService.updateEncounter(encounterId, { status: EncounterStatus.RELEASED });
+    }
   }
 
   resetNewEncounter(): void {
@@ -155,26 +217,26 @@ export class GameComponent implements OnInit {
 
   getTypeColor(type: string): string {
     const typeColors: Record<string, string> = {
-      'Normal': 'type-normal',
-      'Fire': 'type-fire',
-      'Water': 'type-water',
-      'Electric': 'type-electric',
-      'Grass': 'type-grass',
-      'Ice': 'type-ice',
-      'Fighting': 'type-fighting',
-      'Poison': 'type-poison',
-      'Ground': 'type-ground',
-      'Flying': 'type-flying',
-      'Psychic': 'type-psychic',
-      'Bug': 'type-bug',
-      'Rock': 'type-rock',
-      'Ghost': 'type-ghost',
-      'Dragon': 'type-dragon',
-      'Dark': 'type-dark',
-      'Steel': 'type-steel',
-      'Fairy': 'type-fairy'
+      'normal': 'type-normal',
+      'fire': 'type-fire',
+      'water': 'type-water',
+      'electric': 'type-electric',
+      'grass': 'type-grass',
+      'ice': 'type-ice',
+      'fighting': 'type-fighting',
+      'poison': 'type-poison',
+      'ground': 'type-ground',
+      'flying': 'type-flying',
+      'psychic': 'type-psychic',
+      'bug': 'type-bug',
+      'rock': 'type-rock',
+      'ghost': 'type-ghost',
+      'dragon': 'type-dragon',
+      'dark': 'type-dark',
+      'steel': 'type-steel',
+      'fairy': 'type-fairy'
     };
-    return typeColors[type] || 'type-normal';
+    return typeColors[type.toLowerCase()] || 'type-normal';
   }
 
   getStatusColor(status: EncounterStatus): string {
@@ -187,6 +249,18 @@ export class GameComponent implements OnInit {
     }
   }
 
+  getStatColor(stat: number): string {
+    if (stat >= 100) return '#4ADE80'; // green
+    if (stat >= 80) return '#FDE047'; // yellow
+    if (stat >= 60) return '#FB923C'; // orange
+    if (stat >= 40) return '#F87171'; // red
+    return '#EF4444'; // dark red
+  }
+
+  formatPokemonName(name: string): string {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
   updateNickname(value: string): void {
     this.newEncounter.update(current => ({
       ...current,
@@ -197,7 +271,7 @@ export class GameComponent implements OnInit {
   updateLevel(value: number): void {
     this.newEncounter.update(current => ({
       ...current,
-      level: value
+      level: Math.max(1, Math.min(100, value))
     }));
   }
 
@@ -238,5 +312,46 @@ export class GameComponent implements OnInit {
   onLevelChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.updateLevel(+target.value);
+  }
+
+  onNatureChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.updateNature(target.value);
+  }
+
+  onAbilityChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.updateAbility(target.value);
+  }
+
+  onStatusChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.updateStatus(target.value as EncounterStatus);
+  }
+
+  // Helper methods for Pokemon display
+  getPokemonSpriteUrl(pokemon: Pokemon, shiny: boolean = false): string {
+    if (pokemon.sprites) {
+      return shiny ? 
+        (pokemon.sprites.front_shiny || pokemon.sprites.front_default || '') :
+        (pokemon.sprites.front_default || '');
+    }
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
+  }
+
+  getPokemonBackgroundGradient(types: string[]): string {
+    const colors = types.map(type => this.pokemonService.getPokemonTypeColor(type));
+    if (colors.length === 1) {
+      return `linear-gradient(135deg, ${colors[0]}, ${colors[0]}dd)`;
+    }
+    return `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
+  }
+
+  trackByPokemonId(_: number, pokemon: Pokemon): number {
+    return pokemon.id;
+  }
+
+  trackByEncounterId(_: number, encounter: PokemonEncounter): string {
+    return encounter.id;
   }
 } 
