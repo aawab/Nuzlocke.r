@@ -1,212 +1,168 @@
-# Nuzlocke.r
+# Nuzlocke.r 🎮⚡
 
-**Pokemon Nuzlocke Tracker by Aawab**
+*Comprehensive Pokemon Nuzlocke challenge tracker with real-time encounter management and team statistics*
 
-A comprehensive web application for tracking Pokemon Nuzlocke challenge runs, inspired by the popular nuzlocke.app. Built with modern Angular and Node.js technologies.
+## Overview
 
-## 🎮 Features
+Nuzlocke.r revolutionizes Pokemon Nuzlocke challenge tracking with route-based encounter management, real-time team statistics, and comprehensive run analytics. Built with modern Angular and Django technologies to provide seamless Pokemon tracking across multiple challenge runs.
 
-### Core Functionality
-- **Route-based Encounter Tracking**: Monitor Pokemon encounters by game location
-- **Pokemon Status Management**: Track alive, dead, boxed, and released Pokemon
-- **Nuzlocke Run Management**: Create and manage multiple challenge runs
-- **Real-time Statistics**: View encounter counts, deaths, and team composition
-- **Game Boy-inspired UI**: Authentic Pokemon aesthetic with custom styling
+![Nuzlocke.r Dashboard](./public/screenshots/dashboard.png)
 
-### Pokemon Management
-- **Species Database**: Complete Pokemon data with types, stats, and abilities
-- **Nature System**: Full nature tracking with stat modifications
-- **Encounter History**: Detailed logging of all Pokemon encounters
-- **Nickname Support**: Custom names for all captured Pokemon
-- **Level Tracking**: Monitor Pokemon growth throughout the run
+## 🌟 Features
 
-### Data Persistence
-- **PostgreSQL Database**: Reliable data storage and retrieval
-- **RESTful API**: Clean backend architecture for data management
-- **Real-time Updates**: Instant UI updates with Angular signals
-- **Data Migration**: Automated database setup and seeding
+### 🗺️ **Route-Based Encounter Tracking**
+Monitor Pokemon encounters by game location with dynamic route selection and encounter history visualization.
 
-## 🛠️ Technology Stack
+![Route Tracking](./public/screenshots/route-tracking.png)
 
-### Frontend
-- **Angular 20**: Modern component-based architecture
-- **TypeScript**: Type-safe development
-- **Angular Signals**: Reactive state management
-- **SCSS**: Custom styling with utility classes
-- **RxJS**: Reactive programming patterns
+### 👥 **Team Management Interface**
+Manage your active Pokemon team with intuitive status updates, nickname support, and level tracking across Game, Box, and Grave tabs.
 
-### Backend
-- **Django REST Framework**: Python-based API
-  - Django 5.0 with REST Framework
-  - PostgreSQL with advanced features
-  - Built-in admin interface
-  - Robust ORM and migrations
+![Team Management](./public/screenshots/team-management.png)
 
-### Development Tools
-- **Angular CLI**: Project scaffolding and build tools
-- **Nodemon**: Development server with hot reloading
-- **Prettier**: Code formatting
-- **ESLint**: Code quality and consistency
+### 📊 **Real-Time Statistics**
+Track encounter rates, death counts, and team composition with live-updating statistics and progress indicators.
+
+![Statistics Dashboard](./public/screenshots/statistics.png)
+
+### 🎯 **Multi-Run Support**
+Create and manage multiple Nuzlocke challenge runs with custom rules, game versions, and trainer configurations.
+
+![Run Management](./public/screenshots/run-management.png)
+
+### 🎨 **Game Boy-Inspired UI**
+Authentic Pokemon aesthetic with custom styling, type-based color coding, and nostalgic Game Boy design elements.
+
+![UI Design](./public/screenshots/ui-design.png)
+
+### 🔄 **Angular Signals Architecture**
+Modern reactive state management with Angular signals for real-time UI updates and efficient data handling.
+
+![State Management](./public/screenshots/state-management.png)
+
+## 📊 Data Sources
+
+- **Pokemon Species Database**: Complete Pokemon data with types, abilities, base stats, and sprite references
+- **Route Configuration**: Game location data with encounter pools and level ranges
+- **Nature System**: Full nature database with stat modification tracking
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+- **Angular 20 + TypeScript**: Modern component-based architecture with signals
+- **SCSS**: Custom styling with Pokemon-themed utility classes
+- **Angular Signals**: Reactive state management for real-time updates
+- **RxJS**: Reactive programming for HTTP communication
+
+### **Backend**
+- **Django REST Framework**: Python-based API with advanced ORM
+- **PostgreSQL**: Relational database with array and JSON field support
+- **Django Admin**: Built-in admin interface for data management
+- **CORS**: Cross-origin resource sharing for frontend integration
+
+### **Development**
+- **Angular CLI**: Project scaffolding and build optimization
+- **Django Management**: Database migrations and seeding commands
+- **Python Virtual Environments**: Isolated dependency management
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js (v18+) - for Angular frontend
-- Python (3.8+) - for Django backend
-- npm or yarn
-- PostgreSQL database
+```bash
+# Clone the repository
+git clone https://github.com/aawab/nuzlocke.r.git
+cd nuzlocke.r
 
-### Installation
+# Install frontend dependencies
+npm install
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/aawab/nuzlocke.r.git
-   cd nuzlocke.r/nuzlocke-tracker
-   ```
+# Start Angular development server
+npm start
+```
 
-2. **Install dependencies**
-   ```bash
-   # Frontend dependencies
-   npm install
-   
-   # Backend dependencies
-   cd backend
-   npm install
-   cd ..
-   ```
+Runs the app in development mode.
+Open [http://localhost:4200](http://localhost:4200) to view it in your browser.
 
-3. **Database Setup**
-   ```bash
-   # Create database and run migrations
-   npm run db:migrate
-   
-   # Seed with sample data
-   npm run db:seed
-   ```
-
-4. **Environment Configuration**
-   ```bash
-   # Copy environment template
-   cp backend/.env.example backend/.env
-   
-   # Edit database configuration
-   nano backend/.env
-   ```
-
-### Development
-
-**Start the development servers:**
+### Backend Setup
 
 ```bash
-# Terminal 1: Frontend (http://localhost:4200)
-npm run dev
-
-# Terminal 2: Django Backend (http://localhost:8000)
+# Navigate to backend directory
 cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install backend dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp env.example .env
+# Edit .env with your PostgreSQL credentials
+
+# Run database migrations
+python manage.py migrate
+
+# Seed initial Pokemon data
+python manage.py seed_data
+
+# Start Django server
 python manage.py runserver
 ```
 
-### Production Build
-
-```bash
-# Build frontend
-npm run build
-
-# Build backend
-npm run build:backend
-```
-
-## 🎯 Usage
-
-### Creating a New Run
-1. Click "NEW GAME" on the main menu
-2. Select your game version and rules
-3. Begin tracking encounters by route
-
-### Adding Encounters
-1. Select a route from the sidebar
-2. Click "Add Encounter"
-3. Choose your Pokemon and set details
-4. Confirm to add to your team
-
-### Managing Pokemon
-- **Game Tab**: View active team and route encounters
-- **Box Tab**: Manage boxed Pokemon
-- **Grave Tab**: Memorial for fallen team members
-
-## 🔧 API Endpoints
-
-### Pokemon
-- `GET /api/pokemon` - Get all Pokemon
-- `GET /api/pokemon/:id` - Get Pokemon by ID
-- `GET /api/pokemon/routes/all` - Get all routes
-- `GET /api/pokemon/natures/all` - Get all natures
-
-### Runs
-- `GET /api/runs` - Get all runs
-- `POST /api/runs` - Create new run
-- `GET /api/runs/:id` - Get run by ID
-
-### Encounters
-- `GET /api/encounters/:runId` - Get encounters for run
-- `POST /api/encounters` - Create new encounter
-- `PUT /api/encounters/:id` - Update encounter
+Backend runs on [http://localhost:8000](http://localhost:8000) with admin interface at `/admin/`.
 
 ## 📁 Project Structure
 
 ```
-nuzlocke-tracker/
-├── src/
+nuzlocke.r/
+├── frontend/
 │   ├── app/
 │   │   ├── components/          # Angular components
-│   │   ├── data/               # Static data constants
+│   │   │   ├── game/           # Main game interface
+│   │   │   └── main-menu/      # Landing page component
+│   │   ├── data/               # Static Pokemon constants
 │   │   ├── models/             # TypeScript interfaces
 │   │   └── services/           # Angular services
-│   ├── assets/                 # Static assets
-│   └── styles.scss            # Global styles
+│   ├── styles.scss             # Global styling
+│   └── index.html              # Application shell
 ├── backend/
-│   ├── src/
-│   │   ├── models/            # Database models
-│   │   ├── routes/            # API routes
-│   │   ├── services/          # Business logic
-│   │   └── scripts/           # Database scripts
-│   └── package.json
-└── README.md
+│   ├── pokemon/                # Pokemon species and routes
+│   ├── runs/                   # Nuzlocke run management
+│   ├── encounters/             # Pokemon encounter tracking
+│   ├── nuzlocke_api/          # Django project configuration
+│   ├── manage.py              # Django management script
+│   └── requirements.txt       # Python dependencies
+├── public/
+│   ├── favicon.ico            # Application icon
+│   └── screenshots/           # README images
+└── angular.json               # Angular CLI configuration
 ```
 
-## 🎨 Customization
+## 🔧 Development Commands
 
-### Adding New Pokemon
-1. Update `src/app/data/pokemon.constants.ts`
-2. Add sprite assets to `src/assets/sprites/`
-3. Update database seed data
+```bash
+# Frontend
+npm start           # Start Angular development server
+npm run build       # Build for production
+npm run watch       # Build with file watching
 
-### Styling
-- Global styles: `src/styles.scss`
-- Component styles: `src/app/components/*/component.scss`
-- Utility classes available for rapid development
+# Backend
+npm run backend     # Start Django server
+npm run db:migrate  # Run database migrations
+npm run db:seed     # Seed initial data
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-**Aawab** - Pokemon fan and developer
+# Combined Development
+# Terminal 1: npm start
+# Terminal 2: npm run backend
+```
 
 ## 🙏 Acknowledgments
 
-- Inspired by the original nuzlocke.app
-- Pokemon data and sprites from official sources
-- Community feedback and testing
+- **Angular Team** for the powerful reactive framework and signals architecture
+- **Django Software Foundation** for the robust backend framework
+- **Pokemon Company** for the iconic franchise that inspired this project
+- **Nuzlocke Community** for the challenging ruleset that makes Pokemon games more engaging
 
 ---
 
-*Built with ❤️ for the Pokemon Nuzlocke community*
+**Nuzlocke.r** - Pokemon Nuzlocke Tracker by Aawab
