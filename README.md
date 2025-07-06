@@ -76,7 +76,7 @@ cd nuzlocke.r
 npm install
 
 # Start Angular development server
-npm start
+ng serve --open
 ```
 
 Runs the app in development mode.
@@ -142,7 +142,7 @@ nuzlocke.r/
 
 ```bash
 # Frontend
-npm start           # Start Angular development server
+ng serve --open           # Start Angular development server
 npm run build       # Build for production
 npm run watch       # Build with file watching
 
@@ -152,7 +152,7 @@ npm run db:migrate  # Run database migrations
 npm run db:seed     # Seed initial data
 
 # Combined Development
-# Terminal 1: npm start
+# Terminal 1: ng serve
 # Terminal 2: npm run backend
 ```
 
