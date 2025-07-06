@@ -21,6 +21,7 @@ export class GameComponent implements OnInit {
   private showPokemonSelectionSignal = signal<boolean>(false);
   private selectedPokemonSignal = signal<Pokemon | null>(null);
   private selectedRouteSignal = signal<Route | null>(null);
+  private selectedTeamPokemonSignal = signal<PokemonEncounter | null>(null);
   private newEncounterSignal = signal<Partial<PokemonEncounter>>({
     nickname: '',
     level: 5,
@@ -28,6 +29,13 @@ export class GameComponent implements OnInit {
     nature: '',
     location: ''
   });
+
+  // Route encounter forms for inline editing
+  private routeEncounterFormsSignal = signal<{[routeId: string]: {
+    selectedPokemon: Pokemon | null;
+    nickname: string;
+    level: number;
+  } | undefined}>({});
 
   // Team management
   private teamPokemonSignal = signal<PokemonEncounter[]>([]);
@@ -40,7 +48,9 @@ export class GameComponent implements OnInit {
   readonly showPokemonSelection = this.showPokemonSelectionSignal.asReadonly();
   readonly selectedPokemon = this.selectedPokemonSignal.asReadonly();
   readonly selectedRoute = this.selectedRouteSignal.asReadonly();
+  readonly selectedTeamPokemon = this.selectedTeamPokemonSignal.asReadonly();
   readonly newEncounter = this.newEncounterSignal.asReadonly();
+  readonly routeEncounterForms = this.routeEncounterFormsSignal.asReadonly();
   readonly teamPokemon = this.teamPokemonSignal.asReadonly();
   readonly boxPokemon = this.boxPokemonSignal.asReadonly();
   readonly routeEncounters = this.routeEncountersSignal.asReadonly();
@@ -553,123 +563,206 @@ export class GameComponent implements OnInit {
     }
   }
 
-  onNicknameUpdate(route: Route, event: Event) {
+  onRouteEncounterNicknameChange(route: Route, event: Event) {
     const target = event.target as HTMLInputElement;
-    const encounter = this.routeEncounters()[route.id];
+    const currentForm = this.routeEncounterForms()[route.id];
+    if (!currentForm) return;
     
-    if (encounter) {
-      const updatedEncounter = { ...encounter, nickname: target.value };
-      this.routeEncountersSignal.update(encounters => ({
-        ...encounters,
-        [route.id]: updatedEncounter
-      }));
-      
-      // Update in team or box arrays
-      this.updateEncounterInArrays(updatedEncounter);
-    }
+    this.routeEncounterFormsSignal.update(forms => ({
+      ...forms,
+      [route.id]: {
+        ...currentForm,
+        nickname: target.value
+      }
+    }));
   }
 
-  onStatusUpdate(route: Route, event: Event) {
-    const target = event.target as HTMLSelectElement;
-    const encounter = this.routeEncounters()[route.id];
+  onRouteEncounterLevelChange(route: Route, event: Event) {
+    const target = event.target as HTMLInputElement;
+    const currentForm = this.routeEncounterForms()[route.id];
+    if (!currentForm) return;
     
-    if (encounter) {
-      const newStatus = target.value as EncounterStatus;
-      const updatedEncounter = { ...encounter, status: newStatus };
-      
-      this.routeEncountersSignal.update(encounters => ({
-        ...encounters,
-        [route.id]: updatedEncounter
-      }));
-      
-      // Move between team and box based on status
-      this.moveEncounterBasedOnStatus(updatedEncounter);
-    }
+    this.routeEncounterFormsSignal.update(forms => ({
+      ...forms,
+      [route.id]: {
+        ...currentForm,
+        level: parseInt(target.value) || route.levelRange.min
+      }
+    }));
   }
 
-  onNatureUpdate(route: Route, event: Event) {
-    const target = event.target as HTMLSelectElement;
-    const encounter = this.routeEncounters()[route.id];
+  catchEncounter(route: Route) {
+    const form = this.routeEncounterForms()[route.id];
+    if (!form?.selectedPokemon) return;
+
+    const encounter = this.createEncounterFromForm(route, form, EncounterStatus.ALIVE);
     
-    if (encounter) {
-      const updatedEncounter = { ...encounter, nature: target.value };
-      this.routeEncountersSignal.update(encounters => ({
-        ...encounters,
-        [route.id]: updatedEncounter
-      }));
-      
-      // Update in team or box arrays
-      this.updateEncounterInArrays(updatedEncounter);
-    }
-  }
-
-  // Helper methods
-  private updateEncounterInArrays(encounter: PokemonEncounter) {
-    // Update in team if exists
-    this.teamPokemonSignal.update(team => 
-      team.map(p => p.id === encounter.id ? encounter : p)
-    );
-    
-    // Update in box if exists
-    this.boxPokemonSignal.update(box => 
-      box.map(p => p.id === encounter.id ? encounter : p)
-    );
-  }
-
-  private moveEncounterBasedOnStatus(encounter: PokemonEncounter) {
-    // Remove from both arrays first
-    this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounter.id));
-    this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounter.id));
-    
-    // Add to appropriate array based on status
-    if (encounter.status === EncounterStatus.ALIVE && this.teamPokemon().length < 6) {
-      this.teamPokemonSignal.update(team => [...team, encounter]);
-    } else if (encounter.status === EncounterStatus.BOXED || 
-               (encounter.status === EncounterStatus.ALIVE && this.teamPokemon().length >= 6)) {
-      this.boxPokemonSignal.update(box => [...box, encounter]);
-    }
-    // For dead/released Pokemon, they remain only in route encounters
-  }
-
-  // Catch Pokemon from wild encounter
-  catchPokemon(route: Route) {
-    // Show Pokemon selection modal for this route
-    this.selectedRouteSignal.set(route);
-    this.showPokemonSelectionModal();
-  }
-
-  // Add encountered Pokemon to team or box
-  addCaughtPokemon(pokemon: Pokemon, route: Route, nickname: string = '', level: number = 5) {
-    const newEncounter: PokemonEncounter = {
-      id: this.generateId(),
-      pokemonId: pokemon.id,
-      pokemon: pokemon,
-      nickname: nickname || pokemon.name,
-      level: level,
-      status: EncounterStatus.ALIVE,
-      location: route.name,
-      route: route.id,
-      nature: 'Hardy',
-      ability: pokemon.abilities[0] || 'Unknown',
-      caught: true,
-      dateEncountered: new Date()
-    };
-
-    // Add to team if space available, otherwise to box
-    if (this.teamPokemon().length < 6) {
-      this.teamPokemonSignal.update(team => [...team, newEncounter]);
-    } else {
-      newEncounter.status = EncounterStatus.BOXED;
-      this.boxPokemonSignal.update(box => [...box, newEncounter]);
-    }
-
-    // Update route encounters
+    // Add to route encounters
     this.routeEncountersSignal.update(encounters => ({
       ...encounters,
-      [route.id]: newEncounter
+      [route.id]: encounter
     }));
 
-    return newEncounter;
+    // Auto-place in team or box
+    this.autoPlaceEncounter(encounter);
+
+    // Clear form
+    this.clearRouteEncounterForm(route.id);
+  }
+
+  killEncounter(route: Route) {
+    const form = this.routeEncounterForms()[route.id];
+    if (!form?.selectedPokemon) return;
+
+    const encounter = this.createEncounterFromForm(route, form, EncounterStatus.DEAD);
+    
+    // Add to route encounters
+    this.routeEncountersSignal.update(encounters => ({
+      ...encounters,
+      [route.id]: encounter
+    }));
+
+    // Dead pokemon don't go to team/box, just stay in route encounters
+    
+    // Clear form
+    this.clearRouteEncounterForm(route.id);
+  }
+
+  private createEncounterFromForm(route: Route, form: any, status: EncounterStatus): PokemonEncounter {
+    return {
+      id: this.generateId(),
+      pokemonId: form.selectedPokemon.id,
+      pokemon: form.selectedPokemon,
+      nickname: form.nickname || form.selectedPokemon.name,
+      level: form.level,
+      status: status,
+      location: route.name,
+      route: route.id,
+      nature: 'Hardy', // Default nature
+      ability: form.selectedPokemon.abilities[0] || 'Unknown',
+      caught: status === EncounterStatus.ALIVE,
+      dateEncountered: new Date()
+    };
+  }
+
+  private autoPlaceEncounter(encounter: PokemonEncounter) {
+    if (encounter.status !== EncounterStatus.ALIVE) return;
+
+    const currentTeam = this.teamPokemon();
+    
+    // If team has space (less than 6), add to team
+    if (currentTeam.length < 6) {
+      this.teamPokemonSignal.update(team => [...team, encounter]);
+    } else {
+      // Otherwise, add to box with boxed status
+      const boxedEncounter = {...encounter, status: EncounterStatus.BOXED};
+      this.boxPokemonSignal.update(box => [...box, boxedEncounter]);
+    }
+  }
+
+  private clearRouteEncounterForm(routeId: string) {
+    this.routeEncounterFormsSignal.update(forms => {
+      const newForms = {...forms};
+      delete newForms[routeId];
+      return newForms;
+    });
+  }
+
+  // Get team slots (always show 6 slots)
+  getTeamSlots(): (PokemonEncounter | null)[] {
+    const team = this.teamPokemon();
+    const slots: (PokemonEncounter | null)[] = [];
+    
+    // Fill first 6 slots with team pokemon
+    for (let i = 0; i < 6; i++) {
+      slots.push(team[i] || null);
+    }
+    
+    return slots;
+  }
+
+  // Team Pokemon Detail Modal Methods
+  showTeamPokemonDetails(pokemon: PokemonEncounter) {
+    this.selectedTeamPokemonSignal.set(pokemon);
+  }
+
+  hideTeamPokemonDetails() {
+    this.selectedTeamPokemonSignal.set(null);
+  }
+
+  killTeamPokemon() {
+    const pokemon = this.selectedTeamPokemon();
+    if (!pokemon) return;
+
+    // Update status to dead
+    this.updateEncounterStatus(pokemon.id, EncounterStatus.DEAD);
+    
+    // Remove from team and add to grave (or just update status)
+    this.teamPokemonSignal.update(team => team.filter(p => p.id !== pokemon.id));
+    
+    // Close modal
+    this.hideTeamPokemonDetails();
+  }
+
+  releaseTeamPokemon() {
+    const pokemon = this.selectedTeamPokemon();
+    if (!pokemon) return;
+
+    // Update status to released
+    this.updateEncounterStatus(pokemon.id, EncounterStatus.RELEASED);
+    
+    // Remove from team
+    this.teamPokemonSignal.update(team => team.filter(p => p.id !== pokemon.id));
+    
+    // Close modal
+    this.hideTeamPokemonDetails();
+  }
+
+  moveTeamPokemonToBox() {
+    const pokemon = this.selectedTeamPokemon();
+    if (!pokemon) return;
+
+    // Update status to boxed
+    this.updateEncounterStatus(pokemon.id, EncounterStatus.BOXED);
+    
+    // Move from team to box
+    this.teamPokemonSignal.update(team => team.filter(p => p.id !== pokemon.id));
+    this.boxPokemonSignal.update(box => [...box, {...pokemon, status: EncounterStatus.BOXED}]);
+    
+    // Close modal
+    this.hideTeamPokemonDetails();
+  }
+
+  // Route Encounter Form Methods
+  startNewEncounter(route: Route) {
+    // Initialize form for this route
+    this.routeEncounterFormsSignal.update(forms => ({
+      ...forms,
+      [route.id]: {
+        selectedPokemon: null,
+        nickname: '',
+        level: route.levelRange.min
+      }
+    }));
+  }
+
+  onRouteEncounterPokemonChange(route: Route, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const pokemonId = parseInt(target.value);
+    
+    if (pokemonId) {
+      const pokemon = this.pokemonService.pokemonCache().get(pokemonId);
+      if (pokemon) {
+        this.routeEncounterFormsSignal.update(forms => ({
+          ...forms,
+          [route.id]: {
+            selectedPokemon: pokemon,
+            nickname: pokemon.name.toLowerCase(),
+            level: forms[route.id]?.level || route.levelRange.min
+          }
+        }));
+      }
+    }
   }
 
   // Kill Pokemon (mark as dead)
@@ -706,47 +799,5 @@ export class GameComponent implements OnInit {
       this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounter.id));
       this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounter.id));
     }
-  }
-
-  // Handle form submission from Pokemon selection modal
-  onFormSubmit(pokemon: Pokemon, nickname: string, level: number, nature: string, ability: string) {
-    const route = this.selectedRouteSignal();
-    if (route && pokemon) {
-      const newEncounter = this.addCaughtPokemon(pokemon, route, nickname, level);
-      
-      // Update the encounter with additional details
-      const updatedEncounter = {
-        ...newEncounter,
-        nature: nature || 'Hardy',
-        ability: ability || pokemon.abilities[0] || 'Unknown'
-      };
-
-      // Update the signals
-      if (updatedEncounter.status === EncounterStatus.ALIVE) {
-        this.teamPokemonSignal.update(team => 
-          team.map(p => p.id === updatedEncounter.id ? updatedEncounter : p)
-        );
-      } else {
-        this.boxPokemonSignal.update(box => 
-          box.map(p => p.id === updatedEncounter.id ? updatedEncounter : p)
-        );
-      }
-
-      // Close modal
-      this.showPokemonSelectionSignal.set(false);
-      this.selectedRouteSignal.set(null);
-    }
-  }
-
-  // Get team slots (always show 6 slots)
-  getTeamSlots(): (PokemonEncounter | null)[] {
-    const team = this.teamPokemon();
-    const slots: (PokemonEncounter | null)[] = [];
-    
-    for (let i = 0; i < 6; i++) {
-      slots.push(team[i] || null);
-    }
-    
-    return slots;
   }
 } 

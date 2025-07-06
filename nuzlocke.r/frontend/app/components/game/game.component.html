@@ -24,7 +24,7 @@
     <div class="team-slots">
       <div class="team-slot" *ngFor="let pokemon of getTeamSlots(); let i = index">
         @if (pokemon) {
-          <div class="pokemon-icon">
+          <div class="pokemon-icon clickable" (click)="showTeamPokemonDetails(pokemon)">
             <img [src]="pokemon.pokemon.sprites.front_default" [alt]="pokemon.pokemon.name">
             <div class="pokemon-level">Lv.{{ pokemon.level }}</div>
           </div>
@@ -89,7 +89,65 @@
                   </div>
                 } @else {
                   <div class="no-encounter">
-                    <span class="no-encounter-text">No encounter</span>
+                    <!-- Pokemon Selection for New Encounter -->
+                    <div class="encounter-form">
+                      <div class="pokemon-selection">
+                        <div class="form-group">
+                          <label class="form-label">Pokemon</label>
+                          <div class="pokemon-select-wrapper">
+                            @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
+                              <div class="selected-pokemon-sprite">
+                                <img [src]="routeEncounterForms()[route.id]!.selectedPokemon!.sprites.front_default" 
+                                     [alt]="routeEncounterForms()[route.id]!.selectedPokemon!.name" 
+                                     class="pokemon-sprite-small">
+                              </div>
+                            }
+                            <select (change)="onRouteEncounterPokemonChange(route, $event)" class="pokemon-select">
+                              <option value="">Select Pokemon...</option>
+                              <option *ngFor="let pokemon of availablePokemonForRoute()" [value]="pokemon.id">
+                                {{ pokemon.name }} (#{{ pokemon.id }})
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
+                        <div class="encounter-details">
+                          <div class="form-inputs">
+                            <div class="form-group">
+                              <label class="form-label">Nickname</label>
+                              <input 
+                                type="text" 
+                                placeholder="Enter nickname" 
+                                class="nickname-input"
+                                [value]="routeEncounterForms()[route.id]!.nickname || ''"
+                                (input)="onRouteEncounterNicknameChange(route, $event)">
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">Level</label>
+                              <input 
+                                type="number" 
+                                placeholder="Level" 
+                                class="level-input"
+                                min="1" 
+                                max="100"
+                                [value]="routeEncounterForms()[route.id]!.level || route.levelRange.min"
+                                (input)="onRouteEncounterLevelChange(route, $event)">
+                            </div>
+                          </div>
+                          
+                          <div class="encounter-outcome-buttons">
+                            <button class="btn btn-success" (click)="catchEncounter(route)">
+                              <i class="fas fa-pokeball"></i> Caught
+                            </button>
+                            <button class="btn btn-danger" (click)="killEncounter(route)">
+                              <i class="fas fa-skull"></i> Killed
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
                   </div>
                 }
               </div>
@@ -108,10 +166,14 @@
                     <span class="status-indicator">{{ routeEncounters()[route.id].status }}</span>
                   }
                 } @else {
-                  <!-- Show catch button for routes without encounters -->
-                  <button class="action-btn catch-btn" (click)="catchPokemon(route)">
-                    <i class="fas fa-plus"></i> Catch
-                  </button>
+                  <!-- Show when no encounter form is active -->
+                  @if (!routeEncounterForms()[route.id] || !routeEncounterForms()[route.id]!.selectedPokemon) {
+                    <div class="add-encounter-wrapper">
+                      <button class="action-btn add-encounter-btn" (click)="startNewEncounter(route)">
+                        <i class="fas fa-plus"></i> Add Encounter
+                      </button>
+                    </div>
+                  }
                 }
               </div>
             </div>
@@ -273,6 +335,116 @@
     </div>
   </div>
 
+  <!-- Team Pokemon Detail Modal -->
+  <div *ngIf="selectedTeamPokemon()" class="modal-overlay">
+    <div class="modal-content team-detail-modal">
+      <div class="modal-header">
+        <h3>{{ selectedTeamPokemon()?.nickname }}</h3>
+        <button class="close-btn" (click)="hideTeamPokemonDetails()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="team-pokemon-detail">
+          <div class="detail-header">
+            <div class="pokemon-sprite-large">
+              <img [src]="selectedTeamPokemon()?.pokemon?.sprites?.front_default || ''" 
+                   [alt]="selectedTeamPokemon()?.nickname || ''">
+            </div>
+            <div class="pokemon-info-detailed">
+              <h2>{{ selectedTeamPokemon()?.nickname }}</h2>
+              <div class="pokemon-species">{{ selectedTeamPokemon()?.pokemon?.name }}</div>
+              <div class="pokemon-level-large">Level {{ selectedTeamPokemon()?.level }}</div>
+              <div class="pokemon-types">
+                <span *ngFor="let type of selectedTeamPokemon()?.pokemon?.types || []" 
+                      class="pokemon-type"
+                      [class]="'type-' + type.toLowerCase()">
+                  {{ type }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-stats">
+            <h4>Base Stats</h4>
+            <div class="stat-row">
+              <span class="stat-label">HP</span>
+              <span class="stat-value">{{ selectedTeamPokemon()?.pokemon?.baseStats?.hp || 0 }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill stat-hp" [style.width.%]="(selectedTeamPokemon()?.pokemon?.baseStats?.hp || 0) * 100 / 255"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <span class="stat-label">ATK</span>
+              <span class="stat-value">{{ selectedTeamPokemon()?.pokemon?.baseStats?.attack || 0 }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill stat-attack" [style.width.%]="(selectedTeamPokemon()?.pokemon?.baseStats?.attack || 0) * 100 / 255"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <span class="stat-label">DEF</span>
+              <span class="stat-value">{{ selectedTeamPokemon()?.pokemon?.baseStats?.defense || 0 }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill stat-defense" [style.width.%]="(selectedTeamPokemon()?.pokemon?.baseStats?.defense || 0) * 100 / 255"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <span class="stat-label">SPA</span>
+              <span class="stat-value">{{ selectedTeamPokemon()?.pokemon?.baseStats?.specialAttack || 0 }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill stat-special-attack" [style.width.%]="(selectedTeamPokemon()?.pokemon?.baseStats?.specialAttack || 0) * 100 / 255"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <span class="stat-label">SPD</span>
+              <span class="stat-value">{{ selectedTeamPokemon()?.pokemon?.baseStats?.specialDefense || 0 }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill stat-special-defense" [style.width.%]="(selectedTeamPokemon()?.pokemon?.baseStats?.specialDefense || 0) * 100 / 255"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <span class="stat-label">SPE</span>
+              <span class="stat-value">{{ selectedTeamPokemon()?.pokemon?.baseStats?.speed || 0 }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill stat-speed" [style.width.%]="(selectedTeamPokemon()?.pokemon?.baseStats?.speed || 0) * 100 / 255"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-meta">
+            <div class="meta-info">
+              <div class="meta-item">
+                <strong>Nature:</strong> {{ selectedTeamPokemon()?.nature }}
+              </div>
+              <div class="meta-item">
+                <strong>Ability:</strong> {{ selectedTeamPokemon()?.ability }}
+              </div>
+              <div class="meta-item">
+                <strong>Met Location:</strong> {{ selectedTeamPokemon()?.location }}
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <button class="btn btn-warning" (click)="killTeamPokemon()">
+              <i class="fas fa-skull"></i> Kill
+            </button>
+            <button class="btn btn-secondary" (click)="releaseTeamPokemon()">
+              <i class="fas fa-door-open"></i> Release
+            </button>
+            <button class="btn btn-primary" (click)="moveTeamPokemonToBox()">
+              <i class="fas fa-box"></i> Move to Box
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Pokemon Selection Modal -->
   <div *ngIf="showPokemonSelection()" class="modal-overlay">
     <div class="modal-content">
@@ -340,9 +512,9 @@
             </div>
           </div>
           
-          <div class="modal-actions">
-            <button class="btn-secondary" (click)="hidePokemonSelectionModal()">Cancel</button>
-            <button class="btn-primary" (click)="addEncounter()">Add Encounter</button>
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="hidePokemonSelectionModal()">Cancel</button>
+            <button class="btn btn-primary" (click)="addEncounter()">Add Encounter</button>
           </div>
         </div>
       </div>
