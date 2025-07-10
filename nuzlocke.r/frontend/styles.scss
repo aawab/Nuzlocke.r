@@ -142,7 +142,8 @@ textarea,
 .search-input,
 .nickname-input,
 .level-input,
-.pokemon-select {
+.pokemon-select,
+.nature-select {
   width: 100%;
   height: 44px; /* Consistent height for all form elements */
   padding: 0 var(--space-md);
@@ -163,13 +164,38 @@ textarea,
 
 /* Select specific styling */
 select,
-.pokemon-select {
+.pokemon-select,
+.nature-select {
   padding-right: var(--space-3xl); /* Extra padding for dropdown arrow */
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23AEAEB2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right var(--space-md) center;
   background-size: 16px;
   cursor: pointer;
+}
+
+/* Select dropdown options styling */
+select option,
+.pokemon-select option,
+.nature-select option {
+  background: var(--surface-bg);
+  color: var(--text-primary);
+  padding: var(--space-sm) var(--space-md);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+select option:hover,
+.pokemon-select option:hover,
+.nature-select option:hover {
+  background: var(--elevated-bg);
+}
+
+/* Firefox specific */
+select option:checked,
+.pokemon-select option:checked,
+.nature-select option:checked {
+  background: var(--accent-primary);
+  color: white;
 }
 
 textarea,
@@ -237,6 +263,14 @@ button:not(.unstyled) {
   user-select: none;
 }
 
+/* Button Icon Styling */
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)); /* Makes icons white with shadow */
+  transition: all var(--transition-fast);
+}
+
 /* Button Variants */
 .btn-primary {
   background: var(--accent-primary);
@@ -298,6 +332,10 @@ button:not(.unstyled) {
 button:not(.unstyled):hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+
+  .btn-icon {
+    transform: scale(1.05);
+  }
 }
 
 .btn:active,

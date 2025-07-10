@@ -23,13 +23,13 @@
     
     <div class="game-controls">
       <button class="header-btn" [class.active]="activeTab() === 'game'" (click)="setActiveTab('game')">
-        💡 Game
+        <img src="/pokeball-2.png" alt="Game" class="btn-icon"> Game
       </button>
       <button class="header-btn" [class.active]="activeTab() === 'box'" (click)="setActiveTab('box')">
-        📦 Box
+        <img src="/pc-2.png" alt="Box" class="btn-icon"> Box
       </button>
       <button class="header-btn" [class.active]="activeTab() === 'grave'" (click)="setActiveTab('grave')">
-        🪦 Grave
+        <img src="/release-5.png" alt="Grave" class="btn-icon"> Grave
       </button>
     </div>
   </div>
@@ -96,38 +96,72 @@
                                      class="pokemon-sprite-small">
                               </div>
                             }
-                            <select (change)="onRouteEncounterPokemonChange(route, $event)" class="pokemon-select">
+                            <select (change)="onRouteEncounterPokemonChange(route, $event)" class="pokemon-select compact">
                               <option value="">Select Pokemon...</option>
                               <option *ngFor="let pokemon of availablePokemonForRoute()" [value]="pokemon.id">
-                                {{ pokemon.name }} (#{{ pokemon.id }})
+                                {{ formatPokemonName(pokemon.name) }}
                               </option>
                             </select>
                           </div>
                         </div>
                         
                         <div class="form-group level-group">
-                          <label class="form-label">Level</label>
-                          <input 
-                            type="number" 
-                            placeholder="Level" 
-                            class="level-input"
-                            min="1" 
-                            max="100"
-                            [value]="routeEncounterForms()[route.id]?.level || route.levelRange.min"
-                            (input)="onRouteEncounterLevelChange(route, $event)">
+                          <div class="labeled-selector">
+                            <span class="selector-label">Lvl.</span>
+                            <div class="selector-separator"></div>
+                            <input 
+                              type="number" 
+                              placeholder="1-100" 
+                              class="level-input compact"
+                              min="1" 
+                              max="100"
+                              title="Level"
+                              [value]="routeEncounterForms()[route.id]?.level || route.levelRange.min"
+                              (input)="onRouteEncounterLevelChange(route, $event)">
+                          </div>
+                        </div>
+
+                        <div class="form-group nature-group">
+                          <div class="labeled-selector">
+                            <span class="selector-label">Nature</span>
+                            <div class="selector-separator"></div>
+                            <select class="nature-select compact" title="Nature" (change)="onRouteEncounterNatureChange(route, $event)">
+                              <option value="">Select...</option>
+                              <option value="Adamant">Adamant</option>
+                              <option value="Bold">Bold</option>
+                              <option value="Brave">Brave</option>
+                              <option value="Calm">Calm</option>
+                              <option value="Careful">Careful</option>
+                              <option value="Hardy">Hardy</option>
+                              <option value="Hasty">Hasty</option>
+                              <option value="Impish">Impish</option>
+                              <option value="Jolly">Jolly</option>
+                              <option value="Modest">Modest</option>
+                              <option value="Naive">Naive</option>
+                              <option value="Naughty">Naughty</option>
+                              <option value="Quiet">Quiet</option>
+                              <option value="Relaxed">Relaxed</option>
+                              <option value="Serious">Serious</option>
+                              <option value="Timid">Timid</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="encounter-outcome-buttons">
+                          <button class="btn btn-success compact-btn" 
+                                  (click)="catchEncounter(route)" 
+                                  title="Caught"
+                                  [disabled]="!routeEncounterForms()[route.id]?.selectedPokemon">
+                            <img src="/pokeball-1.png" alt="Caught" class="btn-icon">
+                          </button>
+                          <button class="btn btn-danger compact-btn" 
+                                  (click)="killEncounter(route)" 
+                                  title="Killed"
+                                  [disabled]="!routeEncounterForms()[route.id]?.selectedPokemon">
+                            <img src="/kill-1.png" alt="Killed" class="btn-icon">
+                          </button>
                         </div>
                       </div>
-                      
-                      @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
-                        <div class="encounter-outcome-buttons">
-                          <button class="btn btn-success" (click)="catchEncounter(route)">
-                            <i class="fas fa-pokeball"></i> Caught
-                          </button>
-                          <button class="btn btn-danger" (click)="killEncounter(route)">
-                            <i class="fas fa-skull"></i> Killed
-                          </button>
-                        </div>
-                      }
                     </div>
                   </div>
                 }
@@ -138,10 +172,10 @@
                   <!-- Show status-specific actions -->
                   @if (routeEncounters()[route.id].status === EncounterStatus.ALIVE) {
                     <button class="action-btn kill-btn" (click)="killPokemon(route)">
-                      <i class="fas fa-skull"></i> Kill
+                      <img src="/kill-1.png" alt="Kill" class="btn-icon"> Kill
                     </button>
                     <button class="action-btn release-btn" (click)="releasePokemon(route)">
-                      <i class="fas fa-door-open"></i> Release
+                      <img src="/release-3.png" alt="Release" class="btn-icon"> Release
                     </button>
                   } @else {
                     <span class="status-indicator">{{ routeEncounters()[route.id].status }}</span>
@@ -213,7 +247,25 @@
           </div>
 
           <div class="pokemon-info">
-            <h3 class="pokemon-name">{{ pokemon.nickname }}</h3>
+            <div class="pokemon-name-display">
+              @if (editingBoxNickname() === pokemon.id) {
+                <input type="text" 
+                       [value]="pokemon.nickname" 
+                       (input)="updateBoxPokemonNickname(pokemon.id, $event)"
+                       (blur)="saveBoxPokemonNickname(pokemon.id)"
+                       (keyup.enter)="saveBoxPokemonNickname(pokemon.id)"
+                       #boxNicknameInput
+                       class="pokemon-name-input"
+                       [placeholder]="formatPokemonName(pokemon.pokemon.name)">
+              } @else {
+                <h3 class="pokemon-name">
+                  {{ pokemon.nickname || formatPokemonName(pokemon.pokemon.name) }}
+                  <button class="edit-name-btn" (click)="startEditingBoxNickname(pokemon.id)" title="Edit nickname">
+                    ✏️
+                  </button>
+                </h3>
+              }
+            </div>
             <div class="pokemon-types">
               <span *ngFor="let type of pokemon.pokemon.types" 
                     class="pokemon-type"
@@ -279,13 +331,13 @@
           
           <div class="pokemon-actions">
             <button class="btn btn-team" (click)="movePokemonToTeam(pokemon.id)" *ngIf="pokemon.status === EncounterStatus.BOXED">
-              Move to Team
+              <img src="/pokeball-2.png" alt="Team" class="btn-icon"> Move to Team
             </button>
             <button class="btn btn-box" (click)="movePokemonToBox(pokemon.id)" *ngIf="pokemon.status === EncounterStatus.ALIVE">
-              Move to Box
+              <img src="/pc-1.png" alt="Box" class="btn-icon"> Move to Box
             </button>
             <button class="btn btn-release" (click)="updateEncounterStatus(pokemon.id, EncounterStatus.RELEASED)">
-              Release
+              <img src="/release-3.png" alt="Release" class="btn-icon"> Release
             </button>
           </div>
         </div>
@@ -312,7 +364,7 @@
   <div *ngIf="selectedTeamPokemon()" class="modal-overlay">
     <div class="modal-content team-detail-modal">
       <div class="modal-header">
-        <h3>{{ selectedTeamPokemon()?.nickname }}</h3>
+        <h3>{{ selectedTeamPokemon()?.nickname || formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}</h3>
         <button class="close-btn" (click)="hideTeamPokemonDetails()">×</button>
       </div>
       
@@ -324,8 +376,26 @@
                    [alt]="selectedTeamPokemon()?.nickname || ''">
             </div>
             <div class="pokemon-info-detailed">
-              <h2>{{ selectedTeamPokemon()?.nickname }}</h2>
-              <div class="pokemon-species">{{ selectedTeamPokemon()?.pokemon?.name }}</div>
+              <div class="nickname-display">
+                @if (editingTeamNickname()) {
+                  <input type="text" 
+                         [value]="selectedTeamPokemon()?.nickname || ''" 
+                         (input)="updateTeamPokemonNickname($event)"
+                         (blur)="saveTeamPokemonNickname()"
+                         (keyup.enter)="saveTeamPokemonNickname()"
+                         #nicknameInput
+                         class="nickname-input"
+                         placeholder="Enter nickname...">
+                } @else {
+                  <h2 class="pokemon-nickname">
+                    {{ selectedTeamPokemon()?.nickname || formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}
+                    <button class="edit-nickname-btn" (click)="startEditingTeamNickname()" title="Edit nickname">
+                      ✏️
+                    </button>
+                  </h2>
+                }
+              </div>
+              <div class="pokemon-species">{{ formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}</div>
               <div class="pokemon-level-large">Level {{ selectedTeamPokemon()?.level }}</div>
               <div class="pokemon-types">
                 <span *ngFor="let type of selectedTeamPokemon()?.pokemon?.types || []" 
@@ -404,13 +474,13 @@
 
           <div class="detail-actions">
             <button class="btn btn-kill" (click)="killTeamPokemon()">
-              <i class="fas fa-skull"></i> Kill
+              <img src="/kill-1.png" alt="Kill" class="btn-icon"> Kill
             </button>
             <button class="btn btn-release" (click)="releaseTeamPokemon()">
-              <i class="fas fa-door-open"></i> Release
+              <img src="/release-3.png" alt="Release" class="btn-icon"> Release
             </button>
             <button class="btn btn-box" (click)="moveTeamPokemonToBox()">
-              <i class="fas fa-box"></i> Move to Box
+              <img src="/pc-1.png" alt="Box" class="btn-icon"> Move to Box
             </button>
           </div>
         </div>
@@ -435,7 +505,7 @@
             <div class="pokemon-sprite">
               <img [src]="pokemon.sprites.front_default" [alt]="pokemon.name">
             </div>
-            <div class="pokemon-name">{{ pokemon.name }}</div>
+            <div class="pokemon-name">{{ formatPokemonName(pokemon.name) }}</div>
             <div class="pokemon-id">#{{ pokemon.id }}</div>
           </div>
         </div>

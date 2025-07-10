@@ -35,12 +35,18 @@ export class GameComponent implements OnInit {
     selectedPokemon: Pokemon | null;
     nickname: string;
     level: number;
+    nature: string;
   } | undefined}>({});
 
   // Team management
   private teamPokemonSignal = signal<PokemonEncounter[]>([]);
   private boxPokemonSignal = signal<PokemonEncounter[]>([]);
   private routeEncountersSignal = signal<{[routeId: string]: PokemonEncounter}>({});
+  
+  // Nickname editing
+  private pendingNicknames = new Map<string, string>();
+  private editingTeamNicknameSignal = signal<boolean>(false);
+  private editingBoxNicknameSignal = signal<string | null>(null);
 
   // Computed properties
   readonly activeTab = this.activeTabSignal.asReadonly();
@@ -54,6 +60,8 @@ export class GameComponent implements OnInit {
   readonly teamPokemon = this.teamPokemonSignal.asReadonly();
   readonly boxPokemon = this.boxPokemonSignal.asReadonly();
   readonly routeEncounters = this.routeEncountersSignal.asReadonly();
+  readonly editingTeamNickname = this.editingTeamNicknameSignal.asReadonly();
+  readonly editingBoxNickname = this.editingBoxNicknameSignal.asReadonly();
 
   // Service data (computed after constructor)
   readonly currentRun = computed(() => this.pokemonService.currentRun());
@@ -591,6 +599,20 @@ export class GameComponent implements OnInit {
     }));
   }
 
+  onRouteEncounterNatureChange(route: Route, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const currentForm = this.routeEncounterForms()[route.id];
+    if (!currentForm) return;
+    
+    this.routeEncounterFormsSignal.update(forms => ({
+      ...forms,
+      [route.id]: {
+        ...currentForm,
+        nature: target.value
+      }
+    }));
+  }
+
   catchEncounter(route: Route) {
     const form = this.routeEncounterForms()[route.id];
     if (!form?.selectedPokemon) return;
@@ -633,12 +655,12 @@ export class GameComponent implements OnInit {
       id: this.generateId(),
       pokemonId: form.selectedPokemon.id,
       pokemon: form.selectedPokemon,
-      nickname: form.nickname || form.selectedPokemon.name,
+      nickname: form.nickname || this.formatPokemonName(form.selectedPokemon.name),
       level: form.level,
       status: status,
       location: route.name,
       route: route.id,
-      nature: 'Hardy', // Default nature
+      nature: form.nature || 'Hardy', // Use form nature or default
       ability: form.selectedPokemon.abilities[0] || 'Unknown',
       caught: status === EncounterStatus.ALIVE,
       dateEncountered: new Date()
@@ -741,7 +763,8 @@ export class GameComponent implements OnInit {
       [route.id]: {
         selectedPokemon: null,
         nickname: '',
-        level: route.levelRange.min
+        level: route.levelRange.min,
+        nature: ''
       }
     }));
   }
@@ -757,11 +780,23 @@ export class GameComponent implements OnInit {
           ...forms,
           [route.id]: {
             selectedPokemon: pokemon,
-            nickname: pokemon.name.toLowerCase(),
-            level: forms[route.id]?.level || route.levelRange.min
+            nickname: '',
+            level: forms[route.id]?.level || route.levelRange.min,
+            nature: forms[route.id]?.nature || ''
           }
         }));
       }
+    } else {
+      // Clear selection
+      this.routeEncounterFormsSignal.update(forms => ({
+        ...forms,
+        [route.id]: {
+          selectedPokemon: null,
+          nickname: '',
+          level: forms[route.id]?.level || route.levelRange.min,
+          nature: forms[route.id]?.nature || ''
+        }
+      }));
     }
   }
 
@@ -799,5 +834,85 @@ export class GameComponent implements OnInit {
       this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounter.id));
       this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounter.id));
     }
+  }
+
+  // Nickname editing methods
+  startEditingTeamNickname() {
+    this.editingTeamNicknameSignal.set(true);
+    // Focus the input after the view updates
+    setTimeout(() => {
+      const input = document.querySelector('.nickname-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    });
+  }
+
+  updateTeamPokemonNickname(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const pokemon = this.selectedTeamPokemon();
+    if (pokemon) {
+      this.pendingNicknames.set(pokemon.id, target.value);
+    }
+  }
+
+  saveTeamPokemonNickname() {
+    const pokemon = this.selectedTeamPokemon();
+    if (pokemon && this.pendingNicknames.has(pokemon.id)) {
+      const newNickname = this.pendingNicknames.get(pokemon.id) || '';
+      this.updatePokemonNickname(pokemon.id, newNickname);
+      this.pendingNicknames.delete(pokemon.id);
+    }
+    this.editingTeamNicknameSignal.set(false);
+  }
+
+  startEditingBoxNickname(pokemonId: string) {
+    this.editingBoxNicknameSignal.set(pokemonId);
+    // Focus the input after the view updates
+    setTimeout(() => {
+      const input = document.querySelector('.pokemon-name-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    });
+  }
+
+  updateBoxPokemonNickname(pokemonId: string, event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.pendingNicknames.set(pokemonId, target.value);
+  }
+
+  saveBoxPokemonNickname(pokemonId: string) {
+    if (this.pendingNicknames.has(pokemonId)) {
+      const newNickname = this.pendingNicknames.get(pokemonId) || '';
+      this.updatePokemonNickname(pokemonId, newNickname);
+      this.pendingNicknames.delete(pokemonId);
+    }
+    this.editingBoxNicknameSignal.set(null);
+  }
+
+  private updatePokemonNickname(pokemonId: string, newNickname: string) {
+    // Update in team
+    this.teamPokemonSignal.update(team => 
+      team.map(p => p.id === pokemonId ? { ...p, nickname: newNickname } : p)
+    );
+
+    // Update in box
+    this.boxPokemonSignal.update(box => 
+      box.map(p => p.id === pokemonId ? { ...p, nickname: newNickname } : p)
+    );
+
+    // Update in route encounters
+    this.routeEncountersSignal.update(encounters => {
+      const updatedEncounters = { ...encounters };
+      for (const routeId in updatedEncounters) {
+        if (updatedEncounters[routeId].id === pokemonId) {
+          updatedEncounters[routeId] = { ...updatedEncounters[routeId], nickname: newNickname };
+        }
+      }
+      return updatedEncounters;
+    });
   }
 } 

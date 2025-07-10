@@ -125,6 +125,10 @@
         position: relative;
         overflow: hidden;
 
+        .btn-icon {
+          filter: brightness(0) saturate(100%) invert(47%) sepia(6%) saturate(449%) hue-rotate(193deg) brightness(95%) contrast(92%);
+        }
+
         &::before {
           content: '';
           position: absolute;
@@ -156,6 +160,10 @@
           color: white;
           border-color: var(--accent-primary);
           box-shadow: var(--shadow-focus);
+
+          .btn-icon {
+            filter: brightness(0) invert(1);
+          }
 
           &:hover {
             background: var(--accent-primary-hover);
@@ -325,7 +333,7 @@
     .encounter-row {
       display: flex;
       align-items: center;
-      padding: var(--space-xl);
+      padding: var(--space-lg) var(--space-xl);
       border-bottom: 1px solid var(--border-subtle);
       transition: all var(--transition-fast);
 
@@ -431,43 +439,186 @@
 
                   .selected-pokemon-sprite {
                     flex-shrink: 0;
+                    display: flex;
+                    align-items: center;
 
                     .pokemon-sprite-small {
-                      width: 36px;
-                      height: 36px;
+                      width: 44px;
+                      height: 44px;
                       border-radius: var(--radius-sm);
                       background: var(--card-bg);
-                      padding: 2px;
+                      padding: 4px;
                       border: 1px solid var(--border-subtle);
+                      object-fit: contain;
                     }
                   }
 
                   .pokemon-select {
                     flex: 1;
+                    
+                    &.compact {
+                      max-width: 180px;
+                    }
                   }
                 }
               }
 
               .level-group {
-                flex: 1;
+                flex: 0 0 100px;
                 margin-bottom: 0;
+              }
+
+              .nature-group {
+                flex: 0 0 180px;
+                margin-bottom: 0;
+              }
+
+              .labeled-selector {
+                display: flex;
+                align-items: center;
+                height: 44px;
+                background: var(--surface-bg);
+                border: 1px solid var(--border-medium);
+                border-radius: var(--radius-md);
+                overflow: hidden;
+                transition: all var(--transition-fast);
+
+                &:hover {
+                  border-color: var(--border-strong);
+                }
+
+                &:focus-within {
+                  border-color: var(--border-focus);
+                  box-shadow: var(--shadow-focus);
+                }
+
+                .selector-label {
+                  font-size: var(--font-sm);
+                  color: var(--text-secondary);
+                  font-weight: var(--font-medium);
+                  white-space: nowrap;
+                  flex-shrink: 0;
+                  padding: 0 var(--space-sm);
+                }
+
+                .selector-separator {
+                  width: 1px;
+                  height: 24px;
+                  background: var(--border-medium);
+                  flex-shrink: 0;
+                }
 
                 .level-input {
-                  /* Inherits global form styling */
+                  &.compact {
+                    flex: 1;
+                    border: none;
+                    background: transparent;
+                    font-size: var(--font-sm);
+                    text-align: center;
+                    padding: 0 var(--space-sm);
+
+                    &:focus {
+                      box-shadow: none;
+                      border: none;
+                    }
+                  }
                 }
+
+                .nature-select {
+                  &.compact {
+                    flex: 1;
+                    border: none !important;
+                    background: transparent;
+                    font-size: var(--font-sm);
+                    padding: 0 var(--space-sm);
+                    padding-right: 24px; /* Space for dropdown arrow */
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23AEAEB2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+                    background-repeat: no-repeat;
+                    background-position: right 8px center;
+                    background-size: 12px;
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                    outline: none !important;
+                    box-shadow: none !important;
+                    color: var(--text-primary);
+
+                    &:focus {
+                      box-shadow: none !important;
+                      border: none !important;
+                      outline: none !important;
+                    }
+
+                    &:active {
+                      outline: none !important;
+                    }
+
+                    /* Ensure dropdown options have proper styling */
+                    option {
+                      background: var(--surface-bg);
+                      color: var(--text-primary);
+                      border: none;
+                    }
+                  }
+                }
+              }
+
+              .encounter-outcome-buttons {
+                display: flex;
+                gap: var(--space-sm);
+                flex-shrink: 0;
+                margin-bottom: 0;
               }
             }
 
-            .encounter-outcome-buttons {
-              display: flex;
-              gap: var(--space-md);
+            .compact-btn {
+              min-width: 44px;
+              width: 44px;
+              padding: 0;
+              justify-content: center;
+              position: relative;
+              overflow: hidden;
 
-              .btn {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: var(--space-sm);
+              &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                background: white;
+                border-radius: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+                transition: all var(--transition-fast);
+              }
+
+              &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+
+                .btn-icon {
+                  transform: scale(1.1);
+                }
+
+                &::before {
+                  opacity: 0.1;
+                  transform: scale(1);
+                }
+              }
+
+              &:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                
+                .btn-icon {
+                  filter: brightness(0) invert(1) grayscale(1) opacity(0.5);
+                }
+
+                &:hover {
+                  transform: none;
+                  box-shadow: none;
+                }
               }
             }
           }
@@ -893,15 +1044,19 @@
           text-align: center;
           white-space: nowrap;
 
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+                      &:hover {
+              transform: translateY(-2px);
+              box-shadow: var(--shadow-lg);
 
-            &::before {
-              opacity: 0.1;
-              transform: scale(1);
+              .btn-icon {
+                transform: scale(1.1);
+              }
+
+              &::before {
+                opacity: 0.1;
+                transform: scale(1);
+              }
             }
-          }
 
           &::before {
             content: '';
@@ -966,6 +1121,103 @@
           }
         }
       }
+    }
+  }
+}
+
+/* Nickname Editor Styling */
+.nickname-display {
+  margin-bottom: var(--space-sm);
+  
+  .pokemon-nickname {
+    font-size: var(--font-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+
+    .edit-nickname-btn {
+      background: none;
+      border: none;
+      font-size: var(--font-sm);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all var(--transition-fast);
+      padding: var(--space-xs);
+      border-radius: var(--radius-sm);
+
+      &:hover {
+        opacity: 1;
+        background: var(--card-bg);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .nickname-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--accent-primary);
+    font-size: var(--font-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    padding: var(--space-xs) 0;
+    outline: none;
+
+    &::placeholder {
+      color: var(--text-tertiary);
+      opacity: 0.7;
+    }
+  }
+}
+
+.pokemon-name-display {
+  margin-bottom: var(--space-xs);
+  
+  .pokemon-name {
+    font-size: var(--font-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+
+    .edit-name-btn {
+      background: none;
+      border: none;
+      font-size: var(--font-xs);
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all var(--transition-fast);
+      padding: 2px;
+      border-radius: var(--radius-sm);
+
+      &:hover {
+        opacity: 1;
+        background: var(--card-bg);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .pokemon-name-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--accent-primary);
+    font-size: var(--font-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    padding: var(--space-xs) 0;
+    outline: none;
+
+    &::placeholder {
+      color: var(--text-tertiary);
+      opacity: 0.7;
     }
   }
 }

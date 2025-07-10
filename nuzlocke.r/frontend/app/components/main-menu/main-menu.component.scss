@@ -81,6 +81,10 @@
     border-color: var(--accent-primary);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+
+    .menu-icon {
+      transform: scale(1.1);
+    }
   }
   
   &:active {
@@ -123,6 +127,13 @@
   border-radius: var(--radius-sm);
   color: var(--accent-primary);
   flex-shrink: 0;
+
+  .menu-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) saturate(100%) invert(47%) sepia(79%) saturate(6062%) hue-rotate(207deg) brightness(101%) contrast(101%);
+    transition: all var(--transition-fast);
+  }
 }
 
 .option-text {
