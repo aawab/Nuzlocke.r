@@ -1,9 +1,24 @@
 <div class="game-container">
-  <!-- Header -->
+  <!-- Header with Integrated Team -->
   <div class="game-header">
     <div class="game-title">
-      <img src="/assets/pokemon-logo.png" alt="Pokemon" class="pokemon-logo">
-      <h1>{{ currentRun()?.name || 'Pokemon Nuzlocke' }}</h1>
+      <h1>Nuzlocke.r</h1>
+    </div>
+
+    <!-- Integrated Team Slots -->
+    <div class="header-team">
+      <div class="team-slot" *ngFor="let pokemon of getTeamSlots(); let i = index">
+        @if (pokemon) {
+          <div class="pokemon-icon clickable" (click)="showTeamPokemonDetails(pokemon)">
+            <img [src]="pokemon.pokemon.sprites.front_default" [alt]="pokemon.pokemon.name">
+            <div class="pokemon-level">Lvl.{{ pokemon.level }}</div>
+          </div>
+        } @else {
+          <div class="empty-slot">
+            <div class="empty-icon">+</div>
+          </div>
+        }
+      </div>
     </div>
     
     <div class="game-controls">
@@ -16,26 +31,6 @@
       <button class="header-btn" [class.active]="activeTab() === 'grave'" (click)="setActiveTab('grave')">
         🪦 Grave
       </button>
-    </div>
-  </div>
-
-  <!-- Team Bar -->
-  <div class="team-bar">
-    <div class="team-slots">
-      <div class="team-slot" *ngFor="let pokemon of getTeamSlots(); let i = index">
-        @if (pokemon) {
-          <div class="pokemon-icon clickable" (click)="showTeamPokemonDetails(pokemon)">
-            <img [src]="pokemon.pokemon.sprites.front_default" [alt]="pokemon.pokemon.name">
-            <div class="pokemon-level">Lv.{{ pokemon.level }}</div>
-          </div>
-          <div class="pokemon-name">{{ pokemon.nickname }}</div>
-        } @else {
-          <div class="empty-slot">
-            <div class="empty-icon">+</div>
-            <div class="empty-text">Empty</div>
-          </div>
-        }
-      </div>
     </div>
   </div>
 
@@ -91,9 +86,8 @@
                   <div class="no-encounter">
                     <!-- Pokemon Selection for New Encounter -->
                     <div class="encounter-form">
-                      <div class="pokemon-selection">
-                        <div class="form-group">
-                          <label class="form-label">Pokemon</label>
+                      <div class="form-inputs-inline">
+                        <div class="form-group pokemon-group">
                           <div class="pokemon-select-wrapper">
                             @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
                               <div class="selected-pokemon-sprite">
@@ -110,41 +104,28 @@
                             </select>
                           </div>
                         </div>
+                        
+                        <div class="form-group level-group">
+                          <label class="form-label">Level</label>
+                          <input 
+                            type="number" 
+                            placeholder="Level" 
+                            class="level-input"
+                            min="1" 
+                            max="100"
+                            [value]="routeEncounterForms()[route.id]?.level || route.levelRange.min"
+                            (input)="onRouteEncounterLevelChange(route, $event)">
+                        </div>
                       </div>
                       
                       @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
-                        <div class="encounter-details">
-                          <div class="form-inputs">
-                            <div class="form-group">
-                              <label class="form-label">Nickname</label>
-                              <input 
-                                type="text" 
-                                placeholder="Enter nickname" 
-                                class="nickname-input"
-                                [value]="routeEncounterForms()[route.id]!.nickname || ''"
-                                (input)="onRouteEncounterNicknameChange(route, $event)">
-                            </div>
-                            <div class="form-group">
-                              <label class="form-label">Level</label>
-                              <input 
-                                type="number" 
-                                placeholder="Level" 
-                                class="level-input"
-                                min="1" 
-                                max="100"
-                                [value]="routeEncounterForms()[route.id]!.level || route.levelRange.min"
-                                (input)="onRouteEncounterLevelChange(route, $event)">
-                            </div>
-                          </div>
-                          
-                          <div class="encounter-outcome-buttons">
-                            <button class="btn btn-success" (click)="catchEncounter(route)">
-                              <i class="fas fa-pokeball"></i> Caught
-                            </button>
-                            <button class="btn btn-danger" (click)="killEncounter(route)">
-                              <i class="fas fa-skull"></i> Killed
-                            </button>
-                          </div>
+                        <div class="encounter-outcome-buttons">
+                          <button class="btn btn-success" (click)="catchEncounter(route)">
+                            <i class="fas fa-pokeball"></i> Caught
+                          </button>
+                          <button class="btn btn-danger" (click)="killEncounter(route)">
+                            <i class="fas fa-skull"></i> Killed
+                          </button>
                         </div>
                       }
                     </div>
@@ -164,15 +145,6 @@
                     </button>
                   } @else {
                     <span class="status-indicator">{{ routeEncounters()[route.id].status }}</span>
-                  }
-                } @else {
-                  <!-- Show when no encounter form is active -->
-                  @if (!routeEncounterForms()[route.id] || !routeEncounterForms()[route.id]!.selectedPokemon) {
-                    <div class="add-encounter-wrapper">
-                      <button class="action-btn add-encounter-btn" (click)="startNewEncounter(route)">
-                        <i class="fas fa-plus"></i> Add Encounter
-                      </button>
-                    </div>
                   }
                 }
               </div>
@@ -237,7 +209,7 @@
                    [alt]="pokemon.nickname"
                    class="sprite-image">
             </div>
-            <div class="pokemon-level">{{ pokemon.level }}</div>
+            <div class="pokemon-level">Lvl.{{ pokemon.level }}</div>
           </div>
 
           <div class="pokemon-info">
@@ -303,17 +275,18 @@
 
           <div class="pokemon-meta">
             <div class="met-location">Met in {{ pokemon.location }} | Info 🔗</div>
-            <div class="pokemon-actions">
-              <button class="meta-btn" (click)="movePokemonToTeam(pokemon.id)" *ngIf="pokemon.status === EncounterStatus.BOXED">
-                👥
-              </button>
-              <button class="meta-btn" (click)="movePokemonToBox(pokemon.id)" *ngIf="pokemon.status === EncounterStatus.ALIVE">
-                📦
-              </button>
-              <button class="meta-btn" (click)="deleteEncounter(pokemon.id)">
-                🗑️
-              </button>
-            </div>
+          </div>
+          
+          <div class="pokemon-actions">
+            <button class="btn btn-team" (click)="movePokemonToTeam(pokemon.id)" *ngIf="pokemon.status === EncounterStatus.BOXED">
+              Move to Team
+            </button>
+            <button class="btn btn-box" (click)="movePokemonToBox(pokemon.id)" *ngIf="pokemon.status === EncounterStatus.ALIVE">
+              Move to Box
+            </button>
+            <button class="btn btn-release" (click)="updateEncounterStatus(pokemon.id, EncounterStatus.RELEASED)">
+              Release
+            </button>
           </div>
         </div>
       </div>
@@ -430,13 +403,13 @@
           </div>
 
           <div class="detail-actions">
-            <button class="btn btn-warning" (click)="killTeamPokemon()">
+            <button class="btn btn-kill" (click)="killTeamPokemon()">
               <i class="fas fa-skull"></i> Kill
             </button>
-            <button class="btn btn-secondary" (click)="releaseTeamPokemon()">
+            <button class="btn btn-release" (click)="releaseTeamPokemon()">
               <i class="fas fa-door-open"></i> Release
             </button>
-            <button class="btn btn-primary" (click)="moveTeamPokemonToBox()">
+            <button class="btn btn-box" (click)="moveTeamPokemonToBox()">
               <i class="fas fa-box"></i> Move to Box
             </button>
           </div>

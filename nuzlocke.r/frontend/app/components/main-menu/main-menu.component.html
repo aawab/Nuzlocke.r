@@ -1,105 +1,71 @@
-<div class="min-h-screen flex items-center justify-center p-6">
-  <div class="gameboy-container p-8 max-w-2xl w-full">
+<div class="main-menu-container">
+  <div class="menu-content">
     <!-- Header Section -->
-    <div class="text-center mb-8">
-      <h1 class="pixel-font text-2xl text-center mb-2 text-gray-400">Pokémon</h1>
-      <h1 class="pokemon-title">NUZLOCKE</h1>
-      <h2 class="pixel-font text-lg text-center text-gray-400">tracker</h2>
+    <div class="header-section">
+      <h1 class="app-title">
+        <span class="title-nuzlocke">Nuzlocke.r</span>
+      </h1>
+      <p class="app-subtitle">Pokémon Nuzlocke Tracker</p>
     </div>
 
-    <!-- Game Boy Screen -->
-    <div class="gameboy-screen p-8 mb-8">
-      <!-- Menu Options -->
-      <div class="space-y-4 mb-8">
-        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
-          <div class="flex items-center gap-4">
-            <div class="text-2xl">▶</div>
-            <span class="font-bold text-lg">Continue</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-              <span class="text-xs">⚡</span>
-            </div>
-            <span class="text-sm">{{ totalEncounters() }} ⚡ {{ totalAlive() }}</span>
-          </div>
-        </div>
-        
-        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
-          <div class="flex items-center gap-4">
-            <div class="text-2xl">▶</div>
-            <span class="font-bold text-lg">New Game</span>
-          </div>
-          <div class="pokemon-sprite w-16 h-16">
-            <img 
-              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/54.png" 
-              alt="Psyduck"
-              class="w-full h-full object-contain"
-            />
+    <!-- Menu Options -->
+    <div class="menu-options">
+      <button 
+        (click)="continueGame()" 
+        class="menu-option"
+        [disabled]="totalEncounters() === 0"
+        [class.disabled]="totalEncounters() === 0"
+      >
+        <div class="option-content">
+          <div class="option-icon">▶</div>
+          <div class="option-text">
+            <span class="option-title">Continue</span>
+            <span class="option-subtitle" *ngIf="totalEncounters() > 0">
+              {{ totalEncounters() }} encounters • {{ totalAlive() }} alive
+            </span>
+            <span class="option-subtitle" *ngIf="totalEncounters() === 0">
+              No active run
+            </span>
           </div>
         </div>
-        
-        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
-          <div class="flex items-center gap-4">
-            <div class="text-2xl">▶</div>
-            <span class="font-bold text-lg">Load Game</span>
+      </button>
+      
+      <button (click)="newGame()" class="menu-option">
+        <div class="option-content">
+          <div class="option-icon">✨</div>
+          <div class="option-text">
+            <span class="option-title">New Game</span>
+            <span class="option-subtitle">Start fresh adventure</span>
           </div>
         </div>
-        
-        <div class="flex items-center justify-between p-4 border-2 border-gray-600 rounded-lg">
-          <div class="flex items-center gap-4">
-            <div class="text-2xl">▶</div>
-            <span class="font-bold text-lg">Guides</span>
+      </button>
+      
+      <button (click)="loadGame()" class="menu-option">
+        <div class="option-content">
+          <div class="option-icon">📁</div>
+          <div class="option-text">
+            <span class="option-title">Load Game</span>
+            <span class="option-subtitle">Restore saved progress</span>
           </div>
         </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex gap-4 justify-center">
-        <button 
-          (click)="continueGame()" 
-          class="btn-gameboy btn-primary flex-1"
-          [disabled]="totalEncounters() === 0"
-        >
-          Continue
-        </button>
-        <button 
-          (click)="newGame()" 
-          class="btn-gameboy btn-secondary flex-1"
-        >
-          New Game
-        </button>
-      </div>
+      </button>
+      
+      <button (click)="openGuides()" class="menu-option">
+        <div class="option-content">
+          <div class="option-icon">📖</div>
+          <div class="option-text">
+            <span class="option-title">Guides</span>
+            <span class="option-subtitle">Tips and strategies</span>
+          </div>
+        </div>
+      </button>
     </div>
 
-    <!-- Footer Info -->
-    <div class="text-center">
-      <p class="text-sm text-gray-500 mb-2">
-        Keep track of your Pokémon encounters across multiple Nuzlocke runs, and prepare for<br>
-        Gym battles and Rival fights so you never wipe again! Get insights into team match ups,<br>
-        compare stat blocks and get detail on Gym movesets & abilities.
+    <!-- Footer -->
+    <div class="footer-section">
+      <p class="footer-text">
+        Nuzlocke tracking with detailed insights and team analysis
       </p>
-      
-      <!-- Social Icons -->
-      <div class="flex justify-center gap-4 mb-4">
-        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
-          <span class="text-xs">🗑</span>
-        </div>
-        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
-          <span class="text-xs">📱</span>
-        </div>
-        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
-          <span class="text-xs">💬</span>
-        </div>
-      </div>
-      
-      <!-- Attribution -->
-      <div class="text-center">
-        <p class="text-sm text-gray-500">Made with <span class="text-red-500">❤</span> by <strong>Aawab</strong></p>
-        <p class="text-xs text-gray-600 mt-2">
-          All content & design © Pokémon Nuzlocke Tracker, 2024-2025. <a href="#" class="text-blue-400 hover:underline">Privacy Policy</a>. <a href="#" class="text-blue-400 hover:underline">Credits</a>.<br>
-          Pokémon images & names © 1995-2024 Nintendo/Creatures Inc./GAME FREAK inc. TM
-        </p>
-      </div>
     </div>
   </div>
 </div> 
