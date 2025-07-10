@@ -1,6 +1,6 @@
 # Nuzlocke.r 🎮⚡
 
-*Pokemon Nuzlocke planner featuring team optimization tools and AI-driven battle analysis *
+A Pokemon Nuzlocke planner featuring team optimization tools and AI-driven battle analysis
 
 ## Overview
 
@@ -155,12 +155,4 @@ npm run db:seed     # Seed initial data
 # Terminal 1: ng serve
 # Terminal 2: npm run backend
 ```
-
-## 🙏 Acknowledgments
-
-- **Angular Team** for the powerful reactive framework and signals architecture
-- **Django Software Foundation** for the robust backend framework
-- **Pokemon Company** for the iconic franchise that inspired this project
-- **Nuzlocke Community** for the challenging ruleset that makes Pokemon games more engaging
-
 ---
