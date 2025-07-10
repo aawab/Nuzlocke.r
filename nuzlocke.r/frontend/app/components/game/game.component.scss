@@ -473,8 +473,13 @@
                 margin-bottom: 0;
 
                 .nature-select {
+                  border: 0px !important;
+                  border-radius: 0px !important;
+                  
                   &.compact {
                     max-width: 180px;
+                    border: 0px !important;
+                    border-radius: 0px !important;
                   }
                 }
               }
