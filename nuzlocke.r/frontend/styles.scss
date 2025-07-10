@@ -178,25 +178,31 @@ select,
 select option,
 .pokemon-select option,
 .nature-select option {
-  background: var(--surface-bg);
-  color: var(--text-primary);
+  background: var(--surface-bg) !important;
+  color: var(--text-primary) !important;
   padding: var(--space-sm) var(--space-md);
+  border: none !important;
+  outline: none !important;
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */
 select option:hover,
 .pokemon-select option:hover,
 .nature-select option:hover {
-  background: var(--elevated-bg);
+  background: var(--elevated-bg) !important;
 }
 
 /* Firefox specific */
 select option:checked,
 .pokemon-select option:checked,
 .nature-select option:checked {
-  background: var(--accent-primary);
-  color: white;
+  background: var(--accent-primary) !important;
+  color: white !important;
 }
+
+
+
+
 
 textarea,
 .form-textarea {

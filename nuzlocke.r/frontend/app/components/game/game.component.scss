@@ -471,6 +471,12 @@
               .nature-group {
                 flex: 0 0 180px;
                 margin-bottom: 0;
+
+                .nature-select {
+                  &.compact {
+                    max-width: 180px;
+                  }
+                }
               }
 
               .labeled-selector {
@@ -524,43 +530,7 @@
                   }
                 }
 
-                .nature-select {
-                  &.compact {
-                    flex: 1;
-                    border: none !important;
-                    background: transparent;
-                    font-size: var(--font-sm);
-                    padding: 0 var(--space-sm);
-                    padding-right: 24px; /* Space for dropdown arrow */
-                    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23AEAEB2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-                    background-repeat: no-repeat;
-                    background-position: right 8px center;
-                    background-size: 12px;
-                    -webkit-appearance: none;
-                    -moz-appearance: none;
-                    appearance: none;
-                    outline: none !important;
-                    box-shadow: none !important;
-                    color: var(--text-primary);
 
-                    &:focus {
-                      box-shadow: none !important;
-                      border: none !important;
-                      outline: none !important;
-                    }
-
-                    &:active {
-                      outline: none !important;
-                    }
-
-                    /* Ensure dropdown options have proper styling */
-                    option {
-                      background: var(--surface-bg);
-                      color: var(--text-primary);
-                      border: none;
-                    }
-                  }
-                }
               }
 
               .encounter-outcome-buttons {
