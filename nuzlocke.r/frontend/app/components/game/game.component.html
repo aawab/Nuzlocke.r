@@ -88,16 +88,16 @@
                     <div class="encounter-form">
                       <div class="form-inputs-inline">
                         <div class="form-group pokemon-group">
+                          @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
+                            <div class="selected-pokemon-sprite">
+                              <img [src]="routeEncounterForms()[route.id]!.selectedPokemon!.sprites.front_default" 
+                                   [alt]="routeEncounterForms()[route.id]!.selectedPokemon!.name" 
+                                   class="pokemon-sprite-small">
+                            </div>
+                          }
                           <div class="labeled-selector">
                             <span class="selector-label">Pokemon</span>
                             <div class="selector-separator"></div>
-                            @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
-                              <div class="selected-pokemon-sprite">
-                                <img [src]="routeEncounterForms()[route.id]!.selectedPokemon!.sprites.front_default" 
-                                     [alt]="routeEncounterForms()[route.id]!.selectedPokemon!.name" 
-                                     class="pokemon-sprite-small">
-                              </div>
-                            }
                             <select (change)="onRouteEncounterPokemonChange(route, $event)" class="pokemon-select compact">
                               <option value="">Select...</option>
                               <option *ngFor="let pokemon of availablePokemonForRoute()" [value]="pokemon.id">

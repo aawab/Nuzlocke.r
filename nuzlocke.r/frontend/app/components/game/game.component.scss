@@ -431,11 +431,21 @@
               .pokemon-group {
                 flex: 2;
                 margin-bottom: 0;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: var(--space-md);
+                align-self: center; /* Override parent's align-items: end */
+                flex-wrap: nowrap; /* Prevent wrapping */
 
                 .selected-pokemon-sprite {
                   flex-shrink: 0;
                   display: flex;
                   align-items: center;
+                  justify-content: center;
+                  height: 44px; /* Match the labeled-selector height */
+                  width: 44px;
+                  position: relative; /* Ensure proper positioning */
 
                   .pokemon-sprite-small {
                     width: 44px;
@@ -445,7 +455,12 @@
                     padding: 4px;
                     border: 1px solid var(--border-subtle);
                     object-fit: contain;
+                    display: block; /* Ensure proper display */
                   }
+                }
+
+                .labeled-selector {
+                  flex: 1;
                 }
 
                 .pokemon-select {
