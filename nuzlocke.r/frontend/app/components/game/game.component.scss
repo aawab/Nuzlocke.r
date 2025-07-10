@@ -432,33 +432,30 @@
                 flex: 2;
                 margin-bottom: 0;
 
-                .pokemon-select-wrapper {
+                .selected-pokemon-sprite {
+                  flex-shrink: 0;
                   display: flex;
                   align-items: center;
-                  gap: var(--space-md);
 
-                  .selected-pokemon-sprite {
-                    flex-shrink: 0;
-                    display: flex;
-                    align-items: center;
-
-                    .pokemon-sprite-small {
-                      width: 44px;
-                      height: 44px;
-                      border-radius: var(--radius-sm);
-                      background: var(--card-bg);
-                      padding: 4px;
-                      border: 1px solid var(--border-subtle);
-                      object-fit: contain;
-                    }
+                  .pokemon-sprite-small {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: var(--radius-sm);
+                    background: var(--card-bg);
+                    padding: 4px;
+                    border: 1px solid var(--border-subtle);
+                    object-fit: contain;
                   }
+                }
 
-                  .pokemon-select {
-                    flex: 1;
-                    
-                    &.compact {
-                      max-width: 180px;
-                    }
+                .pokemon-select {
+                  border: 0px !important;
+                  border-radius: 0px !important;
+                  flex: 1;
+                  
+                  &.compact {
+                    border: 0px !important;
+                    border-radius: 0px !important;
                   }
                 }
               }
