@@ -329,7 +329,7 @@
     .encounter-row {
       display: flex;
       align-items: center;
-      padding: var(--space-xs) var(--space-md);
+      padding: var(--space-md) var(--space-md);
       border-bottom: 1px solid var(--border-subtle);
       transition: all var(--transition-fast);
 
@@ -425,7 +425,7 @@
             color: var(--text-primary);
             white-space: nowrap;
             text-align: left;
-            height: 32px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -515,7 +515,7 @@
                   color: var(--text-primary);
                   white-space: nowrap;
                   text-align: left;
-                  height: 32px; /* Match other form elements */
+                  height: 40px; /* Match other form elements */
                   display: flex;
                   align-items: center;
                   justify-content: flex-start;
@@ -537,13 +537,13 @@
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  height: 32px; /* Match the labeled-selector height */
-                  width: 32px;
+                  height: 40px; /* Match the labeled-selector height */
+                  width: 40px;
                   position: relative; /* Ensure proper positioning */
 
                   .pokemon-sprite-small {
-                    width: 32px;
-                    height: 32px;
+                    width: 36px;
+                    height: 36px;
                     border-radius: var(--radius-sm);
                     background: var(--card-bg);
                     padding: 2px;
@@ -595,7 +595,7 @@
               .labeled-selector {
                 display: flex;
                 align-items: center;
-                height: 32px;
+                height: 40px;
                 background: var(--surface-bg);
                 border: 1px solid var(--border-medium);
                 border-radius: var(--radius-md);
@@ -622,7 +622,7 @@
 
                 .selector-separator {
                   width: 1px;
-                  height: 24px;
+                  height: 32px;
                   background: var(--border-medium);
                   flex-shrink: 0;
                 }
@@ -657,6 +657,7 @@
             .compact-btn {
               min-width: 44px;
               width: 44px;
+              height: 40px;
               padding: 0;
               justify-content: center;
               position: relative;
@@ -1014,7 +1015,7 @@
 
   .pokemon-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: var(--space-lg);
 
     .pokemon-card-detailed {
@@ -1396,7 +1397,7 @@
   .modal-content {
     width: 70%;
     max-width: 500px;
-    max-height: 70vh;
+    max-height: 80vh;
     overflow-y: auto;
     background: var(--surface-bg);
     border-radius: var(--radius-xl);
@@ -1407,7 +1408,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: var(--space-lg);
+      padding: var(--space-sm) var(--space-lg);
       border-bottom: 1px solid var(--border-subtle);
 
       .header-info {
@@ -1425,7 +1426,7 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 100px;
+          max-width: 16ch;
         }
 
         .pokemon-species-header {
@@ -1493,7 +1494,7 @@
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: var(--space-lg);
         margin-bottom: var(--space-2xl);
-        max-height: 400px;
+        max-height: 500px;
         overflow-y: auto;
 
         .pokemon-option {
@@ -1570,7 +1571,7 @@
           .detail-header {
             display: flex;
             gap: var(--space-2xl);
-            margin-bottom: var(--space-2xl);
+            margin-bottom: var(--space-lg);
             align-items: flex-start;
 
             .pokemon-sprite-large {
@@ -1787,7 +1788,7 @@
           }
 
           .detail-meta {
-            margin-bottom: var(--space-2xl);
+            margin-bottom: var(--space-sm);
 
             .meta-info {
               display: grid;
@@ -1877,7 +1878,7 @@
   }
 
   .pokemon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 }
 
