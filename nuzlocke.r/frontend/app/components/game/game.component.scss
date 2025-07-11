@@ -20,11 +20,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-lg) var(--space-2xl);
+  padding: var(--space-sm) var(--space-2xl);
   background: var(--surface-bg);
   border-bottom: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-sm);
-  min-height: 70px;
+  min-height: 40px;
 
   .game-title {
     h1 {
@@ -46,12 +46,12 @@
       flex-direction: column;
       align-items: center;
       gap: var(--space-xs);
-      padding: var(--space-sm);
+      padding: var(--space-xs);
       background: var(--card-bg);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      min-width: 60px;
-      min-height: 70px;
+      min-width: 50px;
+      min-height: 50px;
       transition: all var(--transition-smooth);
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 
@@ -77,16 +77,17 @@
         .pokemon-level {
           position: absolute;
           bottom: -4px;
-          right: -4px;
+          left: 50%;
+          transform: translateX(-50%);
           background: var(--accent-primary);
           color: white;
-          font-size: 10px;
+          font-size: 8px;
           font-weight: var(--font-bold);
-          padding: 1px 3px;
+          padding: 1px 2px;
           border-radius: var(--radius-sm);
-          min-width: 16px;
+          min-width: 14px;
           text-align: center;
-          line-height: 1.2;
+          line-height: 1.1;
         }
       }
 
@@ -213,28 +214,29 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-xl);
+    padding: var(--space-sm);
     border-bottom: 1px solid var(--border-subtle);
     background: var(--elevated-bg);
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: var(--space-xl);
+          .header-left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
 
-      h2 {
-        font-size: var(--font-xl);
-        font-weight: var(--font-semibold);
-        color: var(--text-primary);
-        margin: 0;
-      }
+        h2 {
+          font-size: var(--font-xl);
+          font-weight: var(--font-semibold);
+          color: var(--text-primary);
+          margin: 0;
+          margin-left: calc(var(--space-md) - var(--space-sm));
+        }
 
       .nav-tabs {
         display: flex;
         gap: var(--space-xs);
 
         button {
-          height: 36px; /* Smaller for header */
+          height: 32px; /* Smaller for header */
           padding: 0 var(--space-md);
           background: var(--surface-bg);
           border: 1px solid var(--border-subtle);
@@ -297,13 +299,13 @@
 
       .search-input {
         width: 200px;
-        height: 36px; /* Slightly smaller for header */
+        height: 32px; /* Slightly smaller for header */
         font-size: var(--font-sm);
       }
 
       .settings-btn {
-        height: 36px;
-        width: 36px;
+        height: 32px;
+        width: 32px;
         padding: 0;
         background: var(--surface-bg);
         border: 1px solid var(--border-medium);
@@ -327,7 +329,7 @@
     .encounter-row {
       display: flex;
       align-items: center;
-      padding: var(--space-lg) var(--space-xl);
+      padding: var(--space-xs) var(--space-md);
       border-bottom: 1px solid var(--border-subtle);
       transition: all var(--transition-fast);
 
@@ -418,12 +420,12 @@
 
           .route-name-inline {
             flex: 0 0 120px;
-            font-size: var(--font-lg);
+            font-size: var(--font-base);
             font-weight: var(--font-medium);
             color: var(--text-primary);
             white-space: nowrap;
             text-align: left;
-            height: 44px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -444,6 +446,8 @@
             }
 
             .pokemon-details {
+              width: 12ch; /* Fixed width for consistent status box positioning */
+              
               .pokemon-name {
                 font-size: var(--font-base);
                 font-weight: var(--font-medium);
@@ -452,7 +456,7 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 80px;
+                width: 100%; /* Take full width of parent container */
               }
 
               .pokemon-level {
@@ -506,12 +510,12 @@
                 align-self: center; /* Override parent's align-items: end */
 
                 .route-name-inline {
-                  font-size: var(--font-lg);
+                  font-size: var(--font-base);
                   font-weight: var(--font-medium);
                   color: var(--text-primary);
                   white-space: nowrap;
                   text-align: left;
-                  height: 44px; /* Match other form elements */
+                  height: 32px; /* Match other form elements */
                   display: flex;
                   align-items: center;
                   justify-content: flex-start;
@@ -533,16 +537,16 @@
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  height: 44px; /* Match the labeled-selector height */
-                  width: 44px;
+                  height: 32px; /* Match the labeled-selector height */
+                  width: 32px;
                   position: relative; /* Ensure proper positioning */
 
                   .pokemon-sprite-small {
-                    width: 44px;
-                    height: 44px;
+                    width: 32px;
+                    height: 32px;
                     border-radius: var(--radius-sm);
                     background: var(--card-bg);
-                    padding: 4px;
+                    padding: 2px;
                     border: 1px solid var(--border-subtle);
                     object-fit: contain;
                     display: block; /* Ensure proper display */
@@ -568,11 +572,13 @@
               .level-group {
                 flex: 0 0 100px;
                 margin-bottom: 0;
+                align-self: center; /* Override parent's align-items: end */
               }
 
               .nature-group {
                 flex: 0 0 180px;
                 margin-bottom: 0;
+                align-self: center; /* Override parent's align-items: end */
 
                 .nature-select {
                   border: 0px !important;
@@ -589,7 +595,7 @@
               .labeled-selector {
                 display: flex;
                 align-items: center;
-                height: 44px;
+                height: 32px;
                 background: var(--surface-bg);
                 border: 1px solid var(--border-medium);
                 border-radius: var(--radius-md);
@@ -1255,6 +1261,9 @@
 /* Nickname Editor Styling */
 .nickname-display {
   margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   
   .pokemon-nickname {
     font-size: var(--font-xl);
@@ -1262,42 +1271,38 @@
     color: var(--text-primary);
     margin: 0;
     display: block;
-    max-width: 130px;
+    width: 12ch; /* Fixed width for consistent layout */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    position: relative;
-    padding: var(--space-xs) 32px var(--space-xs) 0;
+    padding: var(--space-xs) 0;
+  }
 
-    .edit-nickname-btn {
-      background: none;
-      border: none;
-      font-size: var(--font-sm);
-      cursor: pointer;
-      opacity: 0.6;
-      transition: all var(--transition-fast);
-      padding: var(--space-xs);
-      border-radius: var(--radius-sm);
-      position: absolute;
-      right: 4px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .edit-nickname-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-sm);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all var(--transition-fast);
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent button from shrinking */
 
-      &:hover {
-        opacity: 1;
-        background: var(--card-bg);
-        transform: translateY(-50%) scale(1.1);
-      }
+    &:hover {
+      opacity: 1;
+      background: var(--card-bg);
+      transform: scale(1.1);
     }
   }
 
   .nickname-input {
-    width: 100%;
+    width: 12ch; /* Match the text width for consistency */
     background: transparent;
     border: none;
     border-bottom: 2px solid var(--accent-primary);
@@ -1316,6 +1321,9 @@
 
 .pokemon-name-display {
   margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   
   .pokemon-name {
     font-size: var(--font-lg);
@@ -1323,42 +1331,38 @@
     color: var(--text-primary);
     margin: 0;
     display: block;
-    max-width: 120px;
+    width: 12ch; /* Fixed width for consistent layout */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    position: relative;
-    padding: var(--space-xs) 28px var(--space-xs) 0;
+    padding: var(--space-xs) 0;
+  }
 
-    .edit-name-btn {
-      background: none;
-      border: none;
-      font-size: var(--font-xs);
-      cursor: pointer;
-      opacity: 0.5;
-      transition: all var(--transition-fast);
-      padding: 2px;
-      border-radius: var(--radius-sm);
-      position: absolute;
-      right: 4px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .edit-name-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-xs);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all var(--transition-fast);
+    padding: 2px;
+    border-radius: var(--radius-sm);
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent button from shrinking */
 
-      &:hover {
-        opacity: 1;
-        background: var(--card-bg);
-        transform: translateY(-50%) scale(1.1);
-      }
+    &:hover {
+      opacity: 1;
+      background: var(--card-bg);
+      transform: scale(1.1);
     }
   }
 
   .pokemon-name-input {
-    width: 100%;
+    width: 12ch; /* Match the text width for consistency */
     background: transparent;
     border: none;
     border-bottom: 2px solid var(--accent-primary);

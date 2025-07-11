@@ -267,10 +267,10 @@
               } @else {
                 <h3 class="pokemon-name">
                   {{ pokemon.nickname || formatPokemonName(pokemon.pokemon.name) }}
-                  <button class="edit-name-btn" (click)="startEditingBoxNickname(pokemon.id)" title="Edit nickname">
-                    ✏️
-                  </button>
                 </h3>
+                <button class="edit-name-btn" (click)="startEditingBoxNickname(pokemon.id)" title="Edit nickname">
+                  ✏️
+                </button>
               }
             </div>
             <div class="pokemon-types">
@@ -400,10 +400,10 @@
                 } @else {
                   <h2 class="pokemon-nickname">
                     {{ selectedTeamPokemon()?.nickname || formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}
-                    <button class="edit-nickname-btn" (click)="startEditingTeamNickname()" title="Edit nickname">
-                      ✏️
-                    </button>
                   </h2>
+                  <button class="edit-nickname-btn" (click)="startEditingTeamNickname()" title="Edit nickname">
+                    ✏️
+                  </button>
                 }
               </div>
               <div class="pokemon-types">
