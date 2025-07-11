@@ -380,8 +380,16 @@
               }
 
               .pokemon-level {
-                font-size: var(--font-sm);
-                color: var(--text-secondary);
+                background: var(--accent-primary);
+                color: white;
+                font-size: 12px;
+                font-weight: var(--font-bold);
+                padding: 1px var(--space-xs);
+                border-radius: var(--radius-sm);
+                text-align: center;
+                line-height: 1.1;
+                display: inline-block;
+                min-width: 24px;
               }
             }
           }
@@ -460,8 +468,16 @@
               }
 
               .pokemon-level {
-                font-size: var(--font-sm);
-                color: var(--text-secondary);
+                background: var(--accent-primary);
+                color: white;
+                font-size: 12px;
+                font-weight: var(--font-bold);
+                padding: 1px var(--space-xs);
+                border-radius: var(--radius-sm);
+                text-align: center;
+                line-height: 1.1;
+                display: inline-block;
+                min-width: 24px;
               }
             }
           }
@@ -1051,9 +1067,16 @@
         }
 
         .pokemon-level {
-          font-size: var(--font-lg);
+          background: var(--accent-primary);
+          color: white;
+          font-size: var(--font-sm);
           font-weight: var(--font-bold);
-          color: var(--accent-primary);
+          padding: var(--space-xs) var(--space-sm);
+          border-radius: var(--radius-sm);
+          text-align: center;
+          line-height: 1.1;
+          display: inline-block;
+          min-width: 32px;
         }
       }
 
@@ -1438,9 +1461,16 @@
         }
 
         .pokemon-level-header {
-          color: var(--accent-primary);
-          font-size: var(--font-base);
-          font-weight: var(--font-semibold);
+          background: var(--accent-primary);
+          color: white;
+          font-size: var(--font-sm);
+          font-weight: var(--font-bold);
+          padding: var(--space-xs) var(--space-sm);
+          border-radius: var(--radius-sm);
+          text-align: center;
+          line-height: 1.1;
+          display: inline-block;
+          min-width: 32px;
           white-space: nowrap;
         }
       }
@@ -1550,6 +1580,12 @@
           grid-template-columns: 2fr 1fr;
           gap: var(--space-lg);
           margin-bottom: var(--space-xl);
+        }
+
+        .form-group label {
+          font-size: 8px;
+          font-weight: var(--font-medium);
+          color: var(--text-secondary);
         }
 
         .form-actions {
