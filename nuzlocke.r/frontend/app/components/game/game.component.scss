@@ -449,6 +449,10 @@
                 font-weight: var(--font-medium);
                 color: var(--text-primary);
                 margin-bottom: 2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 80px;
               }
 
               .pokemon-level {
@@ -1257,9 +1261,13 @@
     font-weight: var(--font-bold);
     color: var(--text-primary);
     margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
+    display: block;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    padding: var(--space-xs) 32px var(--space-xs) 0;
 
     .edit-nickname-btn {
       background: none;
@@ -1270,11 +1278,20 @@
       transition: all var(--transition-fast);
       padding: var(--space-xs);
       border-radius: var(--radius-sm);
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover {
         opacity: 1;
         background: var(--card-bg);
-        transform: scale(1.1);
+        transform: translateY(-50%) scale(1.1);
       }
     }
   }
@@ -1305,9 +1322,13 @@
     font-weight: var(--font-semibold);
     color: var(--text-primary);
     margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
+    display: block;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    padding: var(--space-xs) 28px var(--space-xs) 0;
 
     .edit-name-btn {
       background: none;
@@ -1318,11 +1339,20 @@
       transition: all var(--transition-fast);
       padding: 2px;
       border-radius: var(--radius-sm);
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover {
         opacity: 1;
         background: var(--card-bg);
-        transform: scale(1.1);
+        transform: translateY(-50%) scale(1.1);
       }
     }
   }
@@ -1391,7 +1421,7 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 150px;
+          max-width: 100px;
         }
 
         .pokemon-species-header {
@@ -1496,6 +1526,10 @@
             font-size: var(--font-sm);
             font-weight: var(--font-medium);
             color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80px;
           }
 
           .pokemon-id {
@@ -1559,6 +1593,11 @@
                   font-weight: var(--font-bold);
                   color: var(--text-primary);
                   margin: 0;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 120px;
+                  padding: var(--space-sm) 0;
                 }
 
                 .nickname-input {
