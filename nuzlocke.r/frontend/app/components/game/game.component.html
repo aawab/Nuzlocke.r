@@ -37,25 +37,19 @@
   <div class="game-content">
     <!-- Game Tab Content -->
     <div *ngIf="activeTab() === 'game'" class="game-tab">
-      <!-- Top Navigation Section -->
-      <div class="top-navigation">
-        <div class="continue-section">
-          <h3>Continue at {{ currentRun()?.game || 'Littleroot Town' }} →</h3>
-        </div>
-        
-        <div class="nav-tabs">
-          <button [class.active]="sidebarTab() === 'nuzlocke'" (click)="setSidebarTab('nuzlocke')">Nuzlocke</button>
-          <button [class.active]="sidebarTab() === 'routes'" (click)="setSidebarTab('routes')">Routes</button>
-          <button [class.active]="sidebarTab() === 'bosses'" (click)="setSidebarTab('bosses')">Bosses</button>
-          <button [class.active]="sidebarTab() === 'upcoming'" (click)="setSidebarTab('upcoming')">Upcoming</button>
-        </div>
-      </div>
-
       <!-- Main Content -->
       <div class="main-content">
         <div class="encounter-tracking">
           <div class="encounter-header">
-            <h2>Route Encounters</h2>
+            <div class="header-left">
+              <h2>Route Encounters</h2>
+              <div class="nav-tabs">
+                <button [class.active]="sidebarTab() === 'nuzlocke'" (click)="setSidebarTab('nuzlocke')">Nuzlocke</button>
+                <button [class.active]="sidebarTab() === 'routes'" (click)="setSidebarTab('routes')">Routes</button>
+                <button [class.active]="sidebarTab() === 'bosses'" (click)="setSidebarTab('bosses')">Bosses</button>
+                <button [class.active]="sidebarTab() === 'upcoming'" (click)="setSidebarTab('upcoming')">Upcoming</button>
+              </div>
+            </div>
             <div class="search-controls">
               <input type="text" placeholder="Search..." class="search-input">
               <button class="settings-btn">⚙️</button>
@@ -65,10 +59,9 @@
           <div class="encounter-list">
             <div class="encounter-row" *ngFor="let route of routes()">
               <div class="route-info">
-                <div class="route-name">{{ route.name }}</div>
-                
                 @if (routeEncounters()[route.id]) {
-                  <div class="encounter-info">
+                  <div class="encounter-info-inline">
+                    <div class="route-name-inline">{{ route.name }}</div>
                     <div class="pokemon-display">
                       <img [src]="routeEncounters()[route.id].pokemon.sprites.front_default" 
                            [alt]="routeEncounters()[route.id].pokemon.name" 
@@ -87,6 +80,10 @@
                     <!-- Pokemon Selection for New Encounter -->
                     <div class="encounter-form">
                       <div class="form-inputs-inline">
+                        <div class="form-group route-group">
+                          <div class="route-name-inline">{{ route.name }}</div>
+                        </div>
+                        
                         <div class="form-group pokemon-group">
                           @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
                             <div class="selected-pokemon-sprite">
