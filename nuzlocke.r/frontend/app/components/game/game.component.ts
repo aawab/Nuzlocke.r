@@ -2,12 +2,14 @@ import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PokemonService } from '../../services/pokemon.service';
-import { Pokemon, PokemonEncounter, Route, EncounterStatus } from '../../models/pokemon.model';
+import { Pokemon, PokemonEncounter, Route, EncounterStatus, GymLeader } from '../../models/pokemon.model';
+import { BossEncounterModalComponent, BossEncounterResult } from './boss-encounter-modal.component';
+import { DEMO_BOSSES } from '../../data/bosses.constants';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BossEncounterModalComponent],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
@@ -46,6 +48,12 @@ export class GameComponent implements OnInit {
   // Nickname editing
   private pendingNicknames = new Map<string, string>();
   private editingTeamNicknameSignal = signal<boolean>(false);
+
+  // Boss encounter management
+  private bossesSignal = signal<GymLeader[]>(DEMO_BOSSES);
+  private selectedBossSignal = signal<GymLeader | null>(null);
+  private showBossEncounterModalSignal = signal<boolean>(false);
+  private bossEncounterResultsSignal = signal<BossEncounterResult[]>([]);
   private editingBoxNicknameSignal = signal<string | null>(null);
 
   // Computed properties
@@ -62,6 +70,10 @@ export class GameComponent implements OnInit {
   readonly routeEncounters = this.routeEncountersSignal.asReadonly();
   readonly editingTeamNickname = this.editingTeamNicknameSignal.asReadonly();
   readonly editingBoxNickname = this.editingBoxNicknameSignal.asReadonly();
+  readonly bosses = this.bossesSignal.asReadonly();
+  readonly selectedBoss = this.selectedBossSignal.asReadonly();
+  readonly showBossEncounterModal = this.showBossEncounterModalSignal.asReadonly();
+  readonly bossEncounterResults = this.bossEncounterResultsSignal.asReadonly();
 
   // Service data (computed after constructor)
   readonly currentRun = computed(() => this.pokemonService.currentRun());
@@ -948,6 +960,40 @@ export class GameComponent implements OnInit {
     const selectedPokemon = this.selectedTeamPokemon();
     if (selectedPokemon && selectedPokemon.id === pokemonId) {
       this.selectedTeamPokemonSignal.set({ ...selectedPokemon, nickname: newNickname });
+    }
+  }
+
+  // Boss encounter methods
+  openBossEncounterModal(boss: GymLeader): void {
+    this.selectedBossSignal.set(boss);
+    this.showBossEncounterModalSignal.set(true);
+  }
+
+  closeBossEncounterModal(): void {
+    this.showBossEncounterModalSignal.set(false);
+    this.selectedBossSignal.set(null);
+  }
+
+  onBattleComplete(result: BossEncounterResult): void {
+    this.bossEncounterResultsSignal.update(results => [...results, result]);
+    
+    // Handle fainted Pokemon
+    if (result.faintedPokemon.length > 0) {
+      this.teamPokemonSignal.update(team => 
+        team.map(pokemon => {
+          if (result.faintedPokemon.includes(pokemon.id)) {
+            return { ...pokemon, status: EncounterStatus.DEAD };
+          }
+          return pokemon;
+        })
+      );
+    }
+
+    // Handle caught Pokemon (if any boss Pokemon were caught)
+    if (result.caughtPokemon.length > 0) {
+      // This would typically involve creating new encounters for caught Pokemon
+      // For now, we'll just log it
+      console.log('Boss Pokemon caught:', result.caughtPokemon);
     }
   }
 } 

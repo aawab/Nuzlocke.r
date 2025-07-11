@@ -1980,4 +1980,249 @@
   .filter-buttons {
     justify-content: center;
   }
+}
+
+/* Boss Encounter Styles */
+.boss-list {
+  .boss-row {
+    display: flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--border-subtle);
+    transition: all var(--transition-fast);
+
+    &:hover {
+      background: var(--elevated-bg);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .boss-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+
+      .boss-trainer {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+        
+        .trainer-sprite {
+          flex-shrink: 0;
+          width: 120px;
+          height: 120px;
+          overflow: hidden;
+          margin-top: -20px;
+          
+          .trainer-image {
+            width: 120px;
+            height: 180px;
+            object-fit: cover;
+            object-position: center top;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+          }
+        }
+
+        .trainer-details {
+          .trainer-name {
+            font-size: var(--font-base);
+            font-weight: var(--font-medium);
+            color: var(--text-primary);
+            margin-bottom: 2px;
+          }
+
+          .trainer-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: 2px;
+
+            .trainer-type {
+              color: var(--accent-primary);
+              font-weight: var(--font-semibold);
+              font-size: var(--font-sm);
+            }
+
+            .trainer-badge {
+              background: var(--accent-primary);
+              color: white;
+              padding: var(--space-xs) var(--space-sm);
+              border-radius: var(--radius-sm);
+              font-size: var(--font-xs);
+              font-weight: var(--font-semibold);
+            }
+          }
+
+          .trainer-location {
+            color: var(--text-secondary);
+            font-size: var(--font-sm);
+          }
+        }
+      }
+
+      .boss-team {
+        display: flex;
+        gap: var(--space-md);
+        
+        .team-pokemon {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          
+          .pokemon-sprite {
+            margin-bottom: var(--space-xs);
+            
+            .pokemon-image {
+              width: 48px;
+              height: 48px;
+              border-radius: var(--radius-sm);
+              background: var(--card-bg);
+              padding: var(--space-xs);
+              border: 1px solid var(--border-subtle);
+            }
+          }
+
+          .pokemon-level {
+            background: var(--accent-primary);
+            color: white;
+            font-size: 12px;
+            font-weight: var(--font-bold);
+            padding: 1px var(--space-xs);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            line-height: 1.1;
+            display: inline-block;
+            min-width: 24px;
+          }
+        }
+      }
+    }
+
+    .boss-actions {
+      .battle-btn {
+        height: 32px;
+        font-size: var(--font-xs);
+        font-weight: var(--font-semibold);
+        padding: 0 var(--space-sm);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        white-space: nowrap;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        background: var(--elevated-bg);
+        color: var(--text-primary);
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          background: white;
+          border-radius: 50%;
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+          transition: all var(--transition-fast);
+        }
+
+        &:hover {
+          background: var(--card-bg);
+          border-color: var(--border-strong);
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: var(--shadow-lg);
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+
+          &::before {
+            opacity: 0.1;
+            transform: scale(1);
+          }
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+}
+
+/* Nuzlocke Rules Content */
+.nuzlocke-content {
+  padding: var(--space-xl);
+  
+  .nuzlocke-rules {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    
+    h3 {
+      color: var(--text-primary);
+      font-size: var(--font-xl);
+      margin-bottom: var(--space-lg);
+      font-weight: var(--font-semibold);
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+      li {
+        color: var(--text-secondary);
+        font-size: var(--font-base);
+        margin-bottom: var(--space-md);
+        padding-left: var(--space-lg);
+        position: relative;
+        
+        &:before {
+          content: "⚡";
+          position: absolute;
+          left: 0;
+          color: var(--accent-primary);
+          font-weight: var(--font-bold);
+        }
+      }
+    }
+  }
+}
+
+/* Upcoming Battles Content */
+.upcoming-content {
+  padding: var(--space-xl);
+  
+  .upcoming-battles {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+    
+    h3 {
+      color: var(--text-primary);
+      font-size: var(--font-xl);
+      margin-bottom: var(--space-lg);
+      font-weight: var(--font-semibold);
+    }
+    
+    p {
+      color: var(--text-secondary);
+      font-size: var(--font-base);
+      margin: 0;
+    }
+  }
 } 

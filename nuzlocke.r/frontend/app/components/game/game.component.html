@@ -56,7 +56,8 @@
             </div>
           </div>
 
-          <div class="encounter-list">
+          <!-- Route Encounters Content -->
+          <div *ngIf="sidebarTab() === 'routes'" class="encounter-list">
             <div class="encounter-row" *ngFor="let route of routes()">
               <div class="route-info">
                 @if (routeEncounters()[route.id]) {
@@ -194,6 +195,63 @@
                   }
                 }
               </div>
+            </div>
+          </div>
+
+          <!-- Boss Encounters Content -->
+          <div *ngIf="sidebarTab() === 'bosses'" class="boss-list">
+            <div class="boss-row" *ngFor="let boss of bosses()">
+              <div class="boss-info">
+                <div class="boss-trainer">
+                  <div class="trainer-sprite">
+                    <img [src]="boss.sprite" [alt]="boss.name" class="trainer-image">
+                  </div>
+                  <div class="trainer-details">
+                    <div class="trainer-name">{{ boss.name }}</div>
+                    <div class="trainer-meta">
+                      <span class="trainer-type" *ngIf="boss.type !== 'Rival'">{{ boss.type }} Type</span>
+                      <span class="trainer-badge" *ngIf="boss.badgeName !== 'Rival Battle'">{{ boss.badgeName }}</span>
+                    </div>
+                    <div class="trainer-location">{{ boss.location }}</div>
+                  </div>
+                </div>
+                <div class="boss-team">
+                  <div class="team-pokemon" *ngFor="let bossPokemon of boss.pokemon">
+                    <div class="pokemon-sprite">
+                      <img [src]="bossPokemon.pokemon.sprites.front_default" 
+                           [alt]="bossPokemon.pokemon.name"
+                           class="pokemon-image">
+                    </div>
+                    <div class="pokemon-level">Lv. {{ bossPokemon.level }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="boss-actions">
+                <button class="action-btn battle-btn" (click)="openBossEncounterModal(boss)">
+                  ⚔️ Battle
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nuzlocke Tab (default) -->
+          <div *ngIf="sidebarTab() === 'nuzlocke'" class="nuzlocke-content">
+            <div class="nuzlocke-rules">
+              <h3>Nuzlocke Rules</h3>
+              <ul>
+                <li>Catch only the first Pokemon encountered in each area</li>
+                <li>Any Pokemon that faints is considered "dead" and must be released</li>
+                <li>Nickname all Pokemon to create emotional bonds</li>
+                <li>If all Pokemon in your party faint, the game is over</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Upcoming Tab -->
+          <div *ngIf="sidebarTab() === 'upcoming'" class="upcoming-content">
+            <div class="upcoming-battles">
+              <h3>Upcoming Battles</h3>
+              <p>Plan your next encounters and battles...</p>
             </div>
           </div>
         </div>
@@ -575,4 +633,14 @@
       </div>
     </div>
   </div>
+
+  <!-- Boss Encounter Modal -->
+  <app-boss-encounter-modal 
+    *ngIf="showBossEncounterModal()"
+    [boss]="selectedBoss() || bosses()[0]"
+    [userTeam]="teamPokemon()"
+    [show]="showBossEncounterModal()"
+    (close)="closeBossEncounterModal()"
+    (battleComplete)="onBattleComplete($event)">
+  </app-boss-encounter-modal>
 </div> 
