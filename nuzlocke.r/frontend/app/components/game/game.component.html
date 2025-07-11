@@ -37,13 +37,13 @@
   <div class="game-content">
     <!-- Game Tab Content -->
     <div *ngIf="activeTab() === 'game'" class="game-tab">
-      <!-- Sidebar -->
-      <div class="sidebar">
+      <!-- Top Navigation Section -->
+      <div class="top-navigation">
         <div class="continue-section">
           <h3>Continue at {{ currentRun()?.game || 'Littleroot Town' }} →</h3>
         </div>
         
-        <div class="sidebar-tabs">
+        <div class="nav-tabs">
           <button [class.active]="sidebarTab() === 'nuzlocke'" (click)="setSidebarTab('nuzlocke')">Nuzlocke</button>
           <button [class.active]="sidebarTab() === 'routes'" (click)="setSidebarTab('routes')">Routes</button>
           <button [class.active]="sidebarTab() === 'bosses'" (click)="setSidebarTab('bosses')">Bosses</button>
@@ -173,6 +173,19 @@
                 @if (routeEncounters()[route.id]) {
                   <!-- Show status-specific actions -->
                   @if (routeEncounters()[route.id].status === EncounterStatus.ALIVE) {
+                    <button class="action-btn move-to-box-btn" (click)="movePokemonToBox(routeEncounters()[route.id].id)">
+                      <img src="/pc-1.png" alt="Move to Box" class="btn-icon"> Move to Box
+                    </button>
+                    <button class="action-btn kill-btn" (click)="killPokemon(route)">
+                      <img src="/kill-1.png" alt="Kill" class="btn-icon"> Kill
+                    </button>
+                    <button class="action-btn release-btn" (click)="releasePokemon(route)">
+                      <img src="/release-3.png" alt="Release" class="btn-icon"> Release
+                    </button>
+                  } @else if (routeEncounters()[route.id].status === EncounterStatus.BOXED) {
+                    <button class="action-btn add-to-team-btn" (click)="movePokemonToTeam(routeEncounters()[route.id].id)">
+                      <img src="/pokeball-2.png" alt="Add to Team" class="btn-icon"> Add to Team
+                    </button>
                     <button class="action-btn kill-btn" (click)="killPokemon(route)">
                       <img src="/kill-1.png" alt="Kill" class="btn-icon"> Kill
                     </button>
@@ -194,11 +207,6 @@
     <div *ngIf="activeTab() === 'box'" class="box-tab">
       <div class="box-header">
         <h2>Pokemon Box</h2>
-        <div class="box-controls">
-          <button class="box-btn">📦 Box</button>
-          <button class="box-btn">👥 Team</button>
-          <button class="box-btn">🔄 Hide stats</button>
-        </div>
       </div>
 
       <div class="box-filters">
@@ -366,7 +374,11 @@
   <div *ngIf="selectedTeamPokemon()" class="modal-overlay">
     <div class="modal-content team-detail-modal">
       <div class="modal-header">
-        <h3>{{ selectedTeamPokemon()?.nickname || formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}</h3>
+        <div class="header-info">
+          <h3 class="pokemon-nickname-header">{{ selectedTeamPokemon()?.nickname || formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}</h3>
+          <span class="pokemon-species-header">{{ formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}</span>
+          <span class="pokemon-level-header">Lv. {{ selectedTeamPokemon()?.level }}</span>
+        </div>
         <button class="close-btn" (click)="hideTeamPokemonDetails()">×</button>
       </div>
       
@@ -397,8 +409,6 @@
                   </h2>
                 }
               </div>
-              <div class="pokemon-species">{{ formatPokemonName(selectedTeamPokemon()?.pokemon?.name || '') }}</div>
-              <div class="pokemon-level-large">Level {{ selectedTeamPokemon()?.level }}</div>
               <div class="pokemon-types">
                 <span *ngFor="let type of selectedTeamPokemon()?.pokemon?.types || []" 
                       class="pokemon-type"
@@ -406,6 +416,19 @@
                   {{ type }}
                 </span>
               </div>
+            </div>
+            <div class="detail-actions">
+              <div class="action-row">
+                <button class="btn btn-kill" (click)="killTeamPokemon()">
+                  <img src="/kill-1.png" alt="Kill" class="btn-icon"> Kill
+                </button>
+                <button class="btn btn-release" (click)="releaseTeamPokemon()">
+                  <img src="/release-3.png" alt="Release" class="btn-icon"> Release
+                </button>
+              </div>
+              <button class="btn btn-box" (click)="moveTeamPokemonToBox()">
+                <img src="/pc-1.png" alt="Box" class="btn-icon"> Move to Box
+              </button>
             </div>
           </div>
 
@@ -474,17 +497,7 @@
             </div>
           </div>
 
-          <div class="detail-actions">
-            <button class="btn btn-kill" (click)="killTeamPokemon()">
-              <img src="/kill-1.png" alt="Kill" class="btn-icon"> Kill
-            </button>
-            <button class="btn btn-release" (click)="releaseTeamPokemon()">
-              <img src="/release-3.png" alt="Release" class="btn-icon"> Release
-            </button>
-            <button class="btn btn-box" (click)="moveTeamPokemonToBox()">
-              <img src="/pc-1.png" alt="Box" class="btn-icon"> Move to Box
-            </button>
-          </div>
+
         </div>
       </div>
     </div>

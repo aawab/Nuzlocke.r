@@ -249,7 +249,7 @@ export class GameComponent implements OnInit {
         location: 'Starter*',
         route: 'starter',
         nature: 'Modest',
-        ability: bulbasaur.abilities[0] || 'Overgrow',
+        ability: this.formatAbilityName(bulbasaur.abilities[0]) || 'Overgrow',
         caught: true,
         dateEncountered: new Date()
       },
@@ -263,7 +263,7 @@ export class GameComponent implements OnInit {
         location: 'Route 101',
         route: 'route-101',
         nature: 'Jolly',
-        ability: pikachu.abilities[0] || 'Static',
+        ability: this.formatAbilityName(pikachu.abilities[0]) || 'Static',
         caught: true,
         dateEncountered: new Date()
       }
@@ -284,7 +284,7 @@ export class GameComponent implements OnInit {
         location: 'Cherrygrove City',
         route: 'cherrygrove-city',
         nature: 'Adamant',
-        ability: gyarados.abilities[0] || 'Intimidate',
+        ability: this.formatAbilityName(gyarados.abilities[0]) || 'Intimidate',
         caught: true,
         dateEncountered: new Date()
       },
@@ -298,7 +298,7 @@ export class GameComponent implements OnInit {
         location: 'Route 30',
         route: 'route-30',
         nature: 'Calm',
-        ability: psyduck.abilities[0] || 'Damp',
+        ability: this.formatAbilityName(psyduck.abilities[0]) || 'Damp',
         caught: true,
         dateEncountered: new Date()
       }
@@ -450,6 +450,17 @@ export class GameComponent implements OnInit {
 
     this.teamPokemonSignal.update(updateInList);
     this.boxPokemonSignal.update(updateInList);
+    
+    // Also update route encounters
+    this.routeEncountersSignal.update(encounters => {
+      const updatedEncounters = { ...encounters };
+      for (const routeId in updatedEncounters) {
+        if (updatedEncounters[routeId].id === encounterId) {
+          updatedEncounters[routeId] = { ...updatedEncounters[routeId], status: newStatus };
+        }
+      }
+      return updatedEncounters;
+    });
   }
 
   // Move Pokemon between team and box
@@ -458,6 +469,9 @@ export class GameComponent implements OnInit {
     if (pokemon) {
       this.teamPokemonSignal.update(team => team.filter(p => p.id !== encounterId));
       this.boxPokemonSignal.update(box => [...box, { ...pokemon, status: EncounterStatus.BOXED }]);
+      
+      // Update route encounter status
+      this.updateEncounterStatus(encounterId, EncounterStatus.BOXED);
     }
   }
 
@@ -466,6 +480,9 @@ export class GameComponent implements OnInit {
     if (pokemon && this.teamPokemon().length < 6) {
       this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounterId));
       this.teamPokemonSignal.update(team => [...team, { ...pokemon, status: EncounterStatus.ALIVE }]);
+      
+      // Update route encounter status
+      this.updateEncounterStatus(encounterId, EncounterStatus.ALIVE);
     }
   }
 
@@ -500,6 +517,11 @@ export class GameComponent implements OnInit {
 
   formatPokemonName(name: string): string {
     return this.pokemonService.formatPokemonName(name);
+  }
+
+  formatAbilityName(ability: string): string {
+    if (!ability) return '';
+    return ability.charAt(0).toUpperCase() + ability.slice(1);
   }
 
   // Track by functions
@@ -552,7 +574,7 @@ export class GameComponent implements OnInit {
         location: route.name,
         route: route.id,
         nature: 'Hardy',
-        ability: pokemon.abilities[0] || 'Unknown',
+        ability: this.formatAbilityName(pokemon.abilities[0]) || 'Unknown',
         caught: true,
         dateEncountered: new Date()
       };
@@ -661,7 +683,7 @@ export class GameComponent implements OnInit {
       location: route.name,
       route: route.id,
       nature: form.nature || 'Hardy', // Use form nature or default
-      ability: form.selectedPokemon.abilities[0] || 'Unknown',
+              ability: this.formatAbilityName(form.selectedPokemon.abilities[0]) || 'Unknown',
       caught: status === EncounterStatus.ALIVE,
       dateEncountered: new Date()
     };
@@ -679,6 +701,17 @@ export class GameComponent implements OnInit {
       // Otherwise, add to box with boxed status
       const boxedEncounter = {...encounter, status: EncounterStatus.BOXED};
       this.boxPokemonSignal.update(box => [...box, boxedEncounter]);
+      
+      // Update the route encounter status to BOXED as well
+      this.routeEncountersSignal.update(encounters => {
+        const updatedEncounters = { ...encounters };
+        for (const routeId in updatedEncounters) {
+          if (updatedEncounters[routeId].id === encounter.id) {
+            updatedEncounters[routeId] = { ...updatedEncounters[routeId], status: EncounterStatus.BOXED };
+          }
+        }
+        return updatedEncounters;
+      });
     }
   }
 
@@ -744,12 +777,8 @@ export class GameComponent implements OnInit {
     const pokemon = this.selectedTeamPokemon();
     if (!pokemon) return;
 
-    // Update status to boxed
-    this.updateEncounterStatus(pokemon.id, EncounterStatus.BOXED);
-    
-    // Move from team to box
-    this.teamPokemonSignal.update(team => team.filter(p => p.id !== pokemon.id));
-    this.boxPokemonSignal.update(box => [...box, {...pokemon, status: EncounterStatus.BOXED}]);
+    // Move from team to box (this will also update route encounter status)
+    this.movePokemonToBox(pokemon.id);
     
     // Close modal
     this.hideTeamPokemonDetails();
@@ -914,5 +943,11 @@ export class GameComponent implements OnInit {
       }
       return updatedEncounters;
     });
+
+    // Update selectedTeamPokemon if it matches the updated Pokemon
+    const selectedPokemon = this.selectedTeamPokemon();
+    if (selectedPokemon && selectedPokemon.id === pokemonId) {
+      this.selectedTeamPokemonSignal.set({ ...selectedPokemon, nickname: newNickname });
+    }
   }
 } 
