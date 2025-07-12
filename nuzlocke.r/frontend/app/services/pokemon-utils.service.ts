@@ -63,4 +63,9 @@ export class PokemonUtilsService {
   generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
+
+  getPixelatedSpriteUrl(pokemonId: number): string {
+    // Use PokeAPI front battle sprite
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
+  }
 } 

@@ -10,7 +10,7 @@
       <div class="team-slot" *ngFor="let pokemon of getTeamSlots(); let i = index">
         @if (pokemon) {
           <div class="pokemon-icon clickable" (click)="showTeamPokemonDetails(pokemon)">
-            <img [src]="pokemon.pokemon.sprites.front_default" [alt]="pokemon.pokemon.name">
+            <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="40"></app-pokemon-sprite>
             <div class="pokemon-level">Lvl.{{ pokemon.level }}</div>
           </div>
         } @else {
@@ -64,9 +64,7 @@
                   <div class="encounter-info-inline">
                     <div class="route-name-inline">{{ route.name }}</div>
                     <div class="pokemon-display">
-                      <img [src]="routeEncounters()[route.id].pokemon.sprites.front_default" 
-                           [alt]="routeEncounters()[route.id].pokemon.name" 
-                           class="pokemon-sprite">
+                      <app-pokemon-sprite [pokemon]="routeEncounters()[route.id].pokemon" [size]="48"></app-pokemon-sprite>
                       <div class="pokemon-details">
                         <div class="pokemon-name">{{ routeEncounters()[route.id].nickname }}</div>
                         <div class="pokemon-level">Lv. {{ routeEncounters()[route.id].level }}</div>
@@ -88,9 +86,7 @@
                         <div class="form-group pokemon-group">
                           @if (routeEncounterForms()[route.id] && routeEncounterForms()[route.id]!.selectedPokemon) {
                             <div class="selected-pokemon-sprite">
-                              <img [src]="routeEncounterForms()[route.id]!.selectedPokemon!.sprites.front_default" 
-                                   [alt]="routeEncounterForms()[route.id]!.selectedPokemon!.name" 
-                                   class="pokemon-sprite-small">
+                              <app-pokemon-sprite [pokemon]="routeEncounterForms()[route.id]!.selectedPokemon!" [size]="48"></app-pokemon-sprite>
                             </div>
                           }
                           <div class="labeled-selector">
@@ -209,7 +205,7 @@
                   <div class="trainer-details">
                     <div class="trainer-name">{{ boss.name }}</div>
                     <div class="trainer-meta">
-                      <span class="trainer-type" *ngIf="boss.type !== 'Rival'">{{ boss.type }} Type</span>
+                      <app-pokemon-type-badge *ngIf="boss.type !== 'Rival'" [type]="boss.type"></app-pokemon-type-badge>
                       <span class="trainer-badge" *ngIf="boss.badgeName !== 'Rival Battle'">{{ boss.badgeName }}</span>
                     </div>
                     <div class="trainer-location">{{ boss.location }}</div>
@@ -217,11 +213,7 @@
                 </div>
                 <div class="boss-team">
                   <div class="team-pokemon" *ngFor="let bossPokemon of boss.pokemon">
-                    <div class="pokemon-sprite">
-                      <img [src]="bossPokemon.pokemon.sprites.front_default" 
-                           [alt]="bossPokemon.pokemon.name"
-                           class="pokemon-image">
-                    </div>
+                    <app-pokemon-sprite [pokemon]="bossPokemon.pokemon" [size]="48"></app-pokemon-sprite>
                     <div class="pokemon-level">Lv. {{ bossPokemon.level }}</div>
                   </div>
                 </div>
@@ -303,11 +295,7 @@
       <div class="pokemon-grid">
         <div *ngFor="let pokemon of boxPokemon(); trackBy: trackByEncounterId" class="pokemon-card-detailed">
           <div class="pokemon-header">
-            <div class="pokemon-sprite">
-              <img [src]="pokemon.pokemon.sprites.front_default" 
-                   [alt]="pokemon.nickname"
-                   class="sprite-image">
-            </div>
+            <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="40"></app-pokemon-sprite>
             <div class="pokemon-level">Lvl.{{ pokemon.level }}</div>
           </div>
 
@@ -332,11 +320,10 @@
               }
             </div>
             <div class="pokemon-types">
-              <span *ngFor="let type of pokemon.pokemon.types" 
-                    class="pokemon-type"
-                    [class]="'type-' + type.toLowerCase()">
-                {{ type }}
-              </span>
+              <app-pokemon-type-badge 
+                *ngFor="let type of pokemon.pokemon.types" 
+                [type]="type">
+              </app-pokemon-type-badge>
             </div>
           </div>
 

@@ -13,17 +13,26 @@ import { PokemonUtilsService } from '../../services/pokemon-utils.service';
   `,
   styles: [`
     .pokemon-type {
-      padding: 2px var(--space-xs);
-      border-radius: var(--radius-xs);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
       font-size: var(--font-xs);
-      font-weight: var(--font-bold);
+      font-weight: var(--font-semibold);
       color: white;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       display: inline-block;
-      min-width: 36px;
+      min-width: 50px;
       text-align: center;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      }
     }
   `]
 })

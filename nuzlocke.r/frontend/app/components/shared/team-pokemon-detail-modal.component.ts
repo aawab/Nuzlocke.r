@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PokemonEncounter } from '../../models/pokemon.model';
 import { PokemonUtilsService } from '../../services/pokemon-utils.service';
 import { PokemonTypeBadgeComponent } from './pokemon-type-badge.component';
+import { PokemonSpriteComponent } from './pokemon-sprite.component';
 
 export interface TeamPokemonAction {
   type: 'kill' | 'release' | 'moveToBox' | 'updateNickname';
@@ -14,25 +15,15 @@ export interface TeamPokemonAction {
 @Component({
   selector: 'app-team-pokemon-detail-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, PokemonTypeBadgeComponent],
+  imports: [CommonModule, FormsModule, PokemonTypeBadgeComponent, PokemonSpriteComponent],
   template: `
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal-content team-detail-modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div class="header-info">
-            <div class="pokemon-nickname-header" *ngIf="!editingNickname(); else editingTemplate">
-              {{ pokemon.nickname || pokemonUtils.formatPokemonName(pokemon.pokemon.name) }}
+            <div class="pokemon-nickname-header">
+              {{ getTruncatedNickname() }}
             </div>
-            <ng-template #editingTemplate>
-              <input type="text" 
-                     [value]="newNickname()" 
-                     (input)="updateNickname($event)"
-                     (blur)="saveNickname()"
-                     (keyup.enter)="saveNickname()"
-                     #nicknameInput
-                     class="nickname-input"
-                     placeholder="Enter nickname...">
-            </ng-template>
             <div class="pokemon-species-header">{{ pokemonUtils.formatPokemonName(pokemon.pokemon.name) }}</div>
             <div class="pokemon-level-header">Lv. {{ pokemon.level }}</div>
           </div>
@@ -42,15 +33,22 @@ export interface TeamPokemonAction {
         <div class="modal-body">
           <div class="detail-main">
             <div class="detail-sprite">
-              <img [src]="pokemon.pokemon.sprites.front_default" 
-                   [alt]="pokemon.pokemon.name"
-                   class="pokemon-image">
+              <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="120"></app-pokemon-sprite>
             </div>
             <div class="pokemon-info-detailed">
-              <div class="nickname-display" *ngIf="!editingNickname()">
-                <h2 class="pokemon-nickname">
-                  {{ pokemon.nickname || pokemonUtils.formatPokemonName(pokemon.pokemon.name) }}
+              <div class="nickname-display">
+                <h2 class="pokemon-nickname" *ngIf="!editingNickname()">
+                  {{ getTruncatedNickname() }}
                 </h2>
+                <input type="text" 
+                       *ngIf="editingNickname()"
+                       [value]="newNickname()" 
+                       (input)="updateNickname($event)"
+                       (blur)="saveNickname()"
+                       (keyup.enter)="saveNickname()"
+                       #nicknameInput
+                       class="nickname-input"
+                       placeholder="Enter nickname...">
                 <button class="edit-nickname-btn" (click)="startEditingNickname()" title="Edit nickname">
                   ✏️
                 </button>
@@ -153,23 +151,30 @@ export interface TeamPokemonAction {
           font-size: var(--font-xl);
           font-weight: var(--font-semibold);
           margin: 0;
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
-        .nickname-input {
-          font-size: var(--font-xl);
-          font-weight: var(--font-semibold);
-          background: var(--card-bg);
-          border: 1px solid var(--border-subtle);
-          border-radius: var(--radius-sm);
-          padding: var(--space-xs);
-          color: var(--text-primary);
+                  .nickname-input {
+            font-size: var(--font-xl);
+            font-weight: var(--font-semibold);
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: var(--space-xs);
+            color: var(--text-primary);
+            margin: 0;
+            max-width: 180px;
+            width: 180px;
 
-          &:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: var(--shadow-focus);
+            &:focus {
+              outline: none;
+              border-color: var(--accent-primary);
+              box-shadow: var(--shadow-focus);
+            }
           }
-        }
 
         .pokemon-species-header {
           color: var(--text-secondary);
@@ -221,14 +226,6 @@ export interface TeamPokemonAction {
       margin-bottom: var(--space-xl);
 
       .detail-sprite {
-        .pokemon-image {
-          width: 120px;
-          height: 120px;
-          border-radius: var(--radius-lg);
-          background: var(--card-bg);
-          padding: var(--space-md);
-          border: 1px solid var(--border-subtle);
-        }
       }
 
       .pokemon-info-detailed {
@@ -242,7 +239,12 @@ export interface TeamPokemonAction {
             color: var(--text-primary);
             font-size: var(--font-xl);
             font-weight: var(--font-semibold);
+            line-height: 1.4;
             margin: 0;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .edit-nickname-btn {
@@ -417,6 +419,11 @@ export class TeamPokemonDetailModalComponent {
 
   constructor(public pokemonUtils: PokemonUtilsService) {}
 
+  getTruncatedNickname(): string {
+    const displayName = this.pokemon.nickname || this.pokemonUtils.formatPokemonName(this.pokemon.pokemon.name);
+    return displayName.length > 10 ? displayName.substring(0, 10) + '...' : displayName;
+  }
+
   getStats() {
     if (!this.pokemon?.pokemon?.baseStats) return [];
     
@@ -433,7 +440,17 @@ export class TeamPokemonDetailModalComponent {
 
   startEditingNickname(): void {
     this.editingNicknameSignal.set(true);
-    this.newNicknameSignal.set(this.pokemon.nickname || '');
+    // Set the full nickname (not truncated) for editing
+    const fullNickname = this.pokemon.nickname || this.pokemonUtils.formatPokemonName(this.pokemon.pokemon.name);
+    this.newNicknameSignal.set(fullNickname);
+    // Focus the input after the view updates
+    setTimeout(() => {
+      const input = document.querySelector('.nickname-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    });
   }
 
   updateNickname(event: Event): void {

@@ -7,6 +7,8 @@ import { Pokemon, PokemonEncounter, Route, EncounterStatus, GymLeader } from '..
 import { BossEncounterModalComponent, BossEncounterResult } from './boss-encounter-modal.component';
 import { PokemonSelectionModalComponent, PokemonSelectionResult } from '../shared/pokemon-selection-modal.component';
 import { TeamPokemonDetailModalComponent, TeamPokemonAction } from '../shared/team-pokemon-detail-modal.component';
+import { PokemonTypeBadgeComponent } from '../shared/pokemon-type-badge.component';
+import { PokemonSpriteComponent } from '../shared/pokemon-sprite.component';
 import { DEMO_BOSSES } from '../../data/bosses.constants';
 
 @Component({
@@ -17,7 +19,9 @@ import { DEMO_BOSSES } from '../../data/bosses.constants';
     FormsModule, 
     BossEncounterModalComponent,
     PokemonSelectionModalComponent,
-    TeamPokemonDetailModalComponent
+    TeamPokemonDetailModalComponent,
+    PokemonTypeBadgeComponent,
+    PokemonSpriteComponent
   ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
@@ -994,9 +998,7 @@ export class GameComponent implements OnInit {
 
     // Handle caught Pokemon (if any boss Pokemon were caught)
     if (result.caughtPokemon.length > 0) {
-      // This would typically involve creating new encounters for caught Pokemon
-      // For now, we'll just log it
-      console.log('Boss Pokemon caught:', result.caughtPokemon);
+      // TODO: Add caught Pokemon to encounters
     }
   }
 

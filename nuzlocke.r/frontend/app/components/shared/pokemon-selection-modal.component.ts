@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Pokemon, EncounterStatus, Route } from '../../models/pokemon.model';
 import { PokemonUtilsService } from '../../services/pokemon-utils.service';
+import { PokemonSpriteComponent } from './pokemon-sprite.component';
 
 export interface PokemonSelectionResult {
   pokemon: Pokemon;
@@ -16,7 +17,7 @@ export interface PokemonSelectionResult {
 @Component({
   selector: 'app-pokemon-selection-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PokemonSpriteComponent],
   template: `
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
@@ -31,9 +32,7 @@ export interface PokemonSelectionResult {
                  class="pokemon-option"
                  [class.selected]="selectedPokemon()?.id === pokemon.id"
                  (click)="selectPokemon(pokemon)">
-              <div class="pokemon-sprite">
-                <img [src]="pokemon.sprites.front_default" [alt]="pokemon.name">
-              </div>
+              <app-pokemon-sprite [pokemon]="pokemon" [size]="64"></app-pokemon-sprite>
               <div class="pokemon-name">{{ pokemonUtils.formatPokemonName(pokemon.name) }}</div>
               <div class="pokemon-id">#{{ pokemon.id }}</div>
             </div>
@@ -185,19 +184,8 @@ export interface PokemonSelectionResult {
         box-shadow: var(--shadow-focus);
       }
 
-      .pokemon-sprite {
-        width: 64px;
-        height: 64px;
+      app-pokemon-sprite {
         margin: 0 auto var(--space-sm);
-        border-radius: var(--radius-sm);
-        background: var(--elevated-bg);
-        padding: var(--space-xs);
-
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
       }
 
       .pokemon-name {

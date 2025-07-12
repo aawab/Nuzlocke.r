@@ -1,23 +1,16 @@
-/* Modern Professional Design System - Nuzlocke Tracker */
-/* Clean, consistent styling inspired by modern web applications */
-
-/* CSS Reset & Base Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Modern Design System Variables */
 :root {
-  /* Color Palette - Professional Dark Theme */
   --primary-bg: #0A0A0A;
   --surface-bg: #1E1E1E;
   --elevated-bg: #2A2A2A;
   --card-bg: #1A1A1A;
   --overlay-bg: rgba(0, 0, 0, 0.8);
   
-  /* Accent Colors */
   --accent-primary: #007AFF;
   --accent-primary-hover: #0056CC;
   --accent-secondary: #34C759;
@@ -25,31 +18,26 @@
   --accent-error: #FF3B30;
   --accent-info: #5AC8FA;
   
-  /* Text Colors */
   --text-primary: #FFFFFF;
   --text-secondary: #AEAEB2;
   --text-tertiary: #636366;
   --text-quaternary: #48484A;
   
-  /* Border Colors */
   --border-subtle: #2C2C2E;
   --border-medium: #3A3A3C;
   --border-strong: #48484A;
   --border-focus: var(--accent-primary);
   
-  /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-focus: 0 0 0 3px rgba(0, 122, 255, 0.2);
   
-  /* Border Radius */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   
-  /* Spacing Scale */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
@@ -60,12 +48,10 @@
   --space-4xl: 40px;
   --space-5xl: 48px;
   
-  /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* Typography Scale */
   --font-xs: 12px;
   --font-sm: 14px;
   --font-base: 16px;
@@ -76,19 +62,16 @@
   --font-4xl: 36px;
   --font-5xl: 48px;
   
-  /* Line Heights */
   --leading-tight: 1.2;
   --leading-normal: 1.5;
   --leading-relaxed: 1.6;
   
-  /* Font Weights */
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
 }
 
-/* Typography */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   font-size: var(--font-base);
@@ -114,7 +97,7 @@ h4 { font-size: var(--font-xl); }
 h5 { font-size: var(--font-lg); }
 h6 { font-size: var(--font-base); }
 
-/* Form Elements - Unified Styling */
+// Form elements
 .form-group {
   display: flex;
   flex-direction: column;
@@ -145,7 +128,7 @@ textarea,
 .pokemon-select,
 .nature-select {
   width: 100%;
-  height: 44px; /* Consistent height for all form elements */
+  height: 44px;
   padding: 0 var(--space-md);
   background: var(--surface-bg);
   border: 1px solid var(--border-medium);
@@ -162,11 +145,11 @@ textarea,
   appearance: none;
 }
 
-/* Select specific styling */
+// Select dropdown styling
 select,
 .pokemon-select,
 .nature-select {
-  padding-right: var(--space-3xl); /* Extra padding for dropdown arrow */
+  padding-right: var(--space-3xl);
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23AEAEB2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right var(--space-md) center;
@@ -174,7 +157,6 @@ select,
   cursor: pointer;
 }
 
-/* Select dropdown options styling */
 select option,
 .pokemon-select option,
 .nature-select option {
@@ -185,24 +167,18 @@ select option,
   outline: none !important;
 }
 
-/* Webkit browsers (Chrome, Safari, Edge) */
 select option:hover,
 .pokemon-select option:hover,
 .nature-select option:hover {
   background: var(--elevated-bg) !important;
 }
 
-/* Firefox specific */
 select option:checked,
 .pokemon-select option:checked,
 .nature-select option:checked {
   background: var(--accent-primary) !important;
   color: white !important;
 }
-
-
-
-
 
 textarea,
 .form-textarea {
@@ -212,7 +188,6 @@ textarea,
   resize: vertical;
 }
 
-/* Form Element Focus States */
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus,
@@ -223,7 +198,6 @@ textarea:focus {
   box-shadow: var(--shadow-focus);
 }
 
-/* Form Element Hover States */
 .form-input:hover,
 .form-select:hover,
 .form-textarea:hover,
@@ -233,7 +207,6 @@ textarea:hover {
   border-color: var(--border-strong);
 }
 
-/* Form Element Disabled States */
 .form-input:disabled,
 .form-select:disabled,
 .form-textarea:disabled,
@@ -245,14 +218,14 @@ textarea:disabled {
   background: var(--card-bg);
 }
 
-/* Button System */
+// Button system
 .btn,
 button:not(.unstyled) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  height: 44px; /* Same height as form elements */
+  height: 44px;
   padding: 0 var(--space-xl);
   background: var(--surface-bg);
   border: 1px solid var(--border-medium);
@@ -270,16 +243,14 @@ button:not(.unstyled) {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-/* Button Icon Styling */
 .btn-icon {
   width: 20px;
   height: 20px;
-  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.6)); /* Makes icons white with stronger shadow */
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
   transition: all var(--transition-fast);
   font-weight: bold;
 }
 
-/* Button Variants */
 .btn-primary {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
@@ -335,7 +306,6 @@ button:not(.unstyled) {
   border-color: #E0302A;
 }
 
-/* Button States */
 .btn:hover,
 button:not(.unstyled):hover {
   transform: translateY(-1px) scale(1.05);
@@ -373,7 +343,6 @@ button:not(.unstyled):disabled:hover {
   box-shadow: none;
 }
 
-/* Button Sizes */
 .btn-sm {
   height: 36px;
   padding: 0 var(--space-md);
@@ -386,7 +355,7 @@ button:not(.unstyled):disabled:hover {
   font-size: var(--font-lg);
 }
 
-/* Card System */
+// Card system
 .card {
   background: var(--surface-bg);
   border: 1px solid var(--border-subtle);
@@ -417,7 +386,7 @@ button:not(.unstyled):disabled:hover {
   background: var(--elevated-bg);
 }
 
-/* Modal System */
+// Modal system
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -460,7 +429,7 @@ button:not(.unstyled):disabled:hover {
   }
 }
 
-/* Pokemon Type Colors - Subdued for Modern Look */
+// Pokemon type colors
 .pokemon-type {
   display: inline-flex;
   align-items: center;
@@ -493,7 +462,7 @@ button:not(.unstyled):disabled:hover {
 .type-steel { background: #616161; }
 .type-fairy { background: #E91E63; }
 
-/* Status Indicators - Restored colored backgrounds */
+// Status badges
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -527,7 +496,7 @@ button:not(.unstyled):disabled:hover {
   background: var(--accent-warning);
 }
 
-/* Layout Utilities */
+// Layout utilities
 .container {
   width: 100%;
   max-width: 1200px;
@@ -562,7 +531,7 @@ button:not(.unstyled):disabled:hover {
 .gap-xl { gap: var(--space-xl); }
 .gap-2xl { gap: var(--space-2xl); }
 
-/* Grid System */
+// Grid system
 .grid {
   display: grid;
   gap: var(--space-xl);
@@ -574,7 +543,7 @@ button:not(.unstyled):disabled:hover {
 .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
 .grid-cols-auto { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
 
-/* Spacing Utilities */
+// Spacing utilities
 .p-xs { padding: var(--space-xs); }
 .p-sm { padding: var(--space-sm); }
 .p-md { padding: var(--space-md); }
@@ -589,7 +558,7 @@ button:not(.unstyled):disabled:hover {
 .m-xl { margin: var(--space-xl); }
 .m-2xl { margin: var(--space-2xl); }
 
-/* Text Utilities */
+// Text utilities
 .text-xs { font-size: var(--font-xs); }
 .text-sm { font-size: var(--font-sm); }
 .text-base { font-size: var(--font-base); }
@@ -611,7 +580,7 @@ button:not(.unstyled):disabled:hover {
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 
-/* Misc Utilities */
+// Misc utilities
 .rounded-sm { border-radius: var(--radius-sm); }
 .rounded-md { border-radius: var(--radius-md); }
 .rounded-lg { border-radius: var(--radius-lg); }
@@ -628,7 +597,7 @@ button:not(.unstyled):disabled:hover {
 
 .transition { transition: all var(--transition-fast); }
 
-/* Scrollbar Styling */
+// Scrollbar styling
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -648,7 +617,7 @@ button:not(.unstyled):disabled:hover {
   background: var(--text-tertiary);
 }
 
-/* Responsive Design */
+// Responsive design
 @media (max-width: 768px) {
   .grid-cols-2,
   .grid-cols-3,

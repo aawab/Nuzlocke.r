@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GymLeader, PokemonEncounter } from '../../models/pokemon.model';
 import { PokemonUtilsService } from '../../services/pokemon-utils.service';
+import { PokemonTypeBadgeComponent } from '../shared/pokemon-type-badge.component';
+import { PokemonSpriteComponent } from '../shared/pokemon-sprite.component';
 
 export interface BossEncounterResult {
   wins: number;
@@ -16,7 +18,7 @@ export interface BossEncounterResult {
 @Component({
   selector: 'app-boss-encounter-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PokemonTypeBadgeComponent, PokemonSpriteComponent],
   template: `
     <div class="boss-modal-overlay" (click)="closeModal()">
       <div class="boss-modal-content" (click)="$event.stopPropagation()">
@@ -36,7 +38,10 @@ export interface BossEncounterResult {
           <div class="boss-info-section">
             <div class="boss-details">
               <h2 class="boss-name">{{ boss.name }}</h2>
-              <div class="boss-type" *ngIf="boss.type && boss.type !== 'Rival'">{{ boss.type }} Type Leader</div>
+              <div class="boss-type-container" *ngIf="boss.type && boss.type !== 'Rival'">
+              <app-pokemon-type-badge [type]="boss.type"></app-pokemon-type-badge>
+              <span class="leader-text">Type Leader</span>
+            </div>
               <div class="boss-location">{{ boss.location }}</div>
               <div class="boss-badge" *ngIf="boss.badgeName && boss.badgeName !== 'Rival Battle'">{{ boss.badgeName }}</div>
             </div>
@@ -49,9 +54,7 @@ export interface BossEncounterResult {
               <div *ngFor="let bossPokemon of boss.pokemon; let i = index" 
                    class="boss-pokemon-card">
                 <div class="boss-pokemon-sprite">
-                  <img [src]="bossPokemon.pokemon.sprites.front_default" 
-                       [alt]="bossPokemon.pokemon.name"
-                       class="pokemon-sprite">
+                  <app-pokemon-sprite [pokemon]="bossPokemon.pokemon" [size]="64"></app-pokemon-sprite>
                 </div>
                 <div class="boss-pokemon-info">
                   <div class="pokemon-name">{{ formatPokemonName(bossPokemon.pokemon.name) }}</div>
@@ -268,11 +271,17 @@ export interface BossEncounterResult {
         margin: 0 0 var(--space-sm) 0;
       }
 
-      .boss-type {
-        color: var(--accent-primary);
-        font-weight: var(--font-semibold);
-        font-size: var(--font-base);
+      .boss-type-container {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
         margin-bottom: var(--space-xs);
+
+        .leader-text {
+          color: var(--text-secondary);
+          font-weight: var(--font-medium);
+          font-size: var(--font-sm);
+        }
       }
 
       .boss-location {
@@ -329,14 +338,6 @@ export interface BossEncounterResult {
 
     .boss-pokemon-sprite {
       margin-bottom: var(--space-md);
-
-      .pokemon-sprite {
-        width: 64px;
-        height: 64px;
-        border-radius: var(--radius-sm);
-        background: var(--elevated-bg);
-        padding: var(--space-xs);
-      }
     }
 
     .boss-pokemon-info {
@@ -754,7 +755,7 @@ export class BossEncounterModalComponent {
   readonly battleOutcome = this.battleOutcomeSignal.asReadonly();
   readonly encounterResults = this.encounterResultsSignal.asReadonly();
 
-  constructor(private pokemonUtils: PokemonUtilsService) {}
+  constructor(public pokemonUtils: PokemonUtilsService) {}
 
   getTrainerSprite(): string {
     const spriteMap: { [key: string]: string } = {

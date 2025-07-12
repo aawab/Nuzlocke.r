@@ -1,4 +1,4 @@
-import { Component, OnInit, computed } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PokemonService } from '../../services/pokemon.service';
@@ -11,8 +11,7 @@ import { EncounterStatus } from '../../models/pokemon.model';
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.scss']
 })
-export class MainMenuComponent implements OnInit {
-  // Computed values from service
+export class MainMenuComponent {
   readonly totalEncounters = computed(() => this.pokemonService.encounters().length);
   readonly totalDeaths = computed(() => 
     this.pokemonService.encounters().filter(e => e.status === EncounterStatus.DEAD).length
@@ -24,10 +23,6 @@ export class MainMenuComponent implements OnInit {
     private router: Router,
     private pokemonService: PokemonService
   ) {}
-
-  ngOnInit(): void {
-    // No need for subscriptions with signals
-  }
 
   continueGame(): void {
     this.router.navigate(['/game']);
@@ -43,12 +38,10 @@ export class MainMenuComponent implements OnInit {
   }
 
   loadGame(): void {
-    // Placeholder for load game functionality
-    console.log('Load game functionality to be implemented');
+    // TODO: Implement load game functionality
   }
 
   openGuides(): void {
-    // Placeholder for guides functionality
-    console.log('Guides functionality to be implemented');
+    // TODO: Implement guides functionality
   }
 } 

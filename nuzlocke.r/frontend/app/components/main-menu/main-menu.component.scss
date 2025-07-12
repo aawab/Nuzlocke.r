@@ -1,4 +1,3 @@
-/* Main Menu Component - Uses Global Design System */
 :host {
   display: block;
   width: 100%;
@@ -21,7 +20,7 @@
   text-align: center;
 }
 
-/* Header Section */
+// Header section
 .header-section {
   margin-bottom: var(--space-5xl);
 }
@@ -57,7 +56,7 @@
   letter-spacing: 0.025em;
 }
 
-/* Menu Options */
+// Menu options
 .menu-options {
   display: flex;
   flex-direction: column;
@@ -66,7 +65,7 @@
 }
 
 .menu-option {
-  height: 88px; /* Consistent height with other form elements */
+  height: 88px;
   background: var(--surface-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -157,7 +156,7 @@
   line-height: var(--leading-normal);
 }
 
-/* Footer Section */
+// Footer section
 .footer-section {
   border-top: 1px solid var(--border-subtle);
   padding-top: var(--space-2xl);
@@ -180,7 +179,7 @@
   }
 }
 
-/* Responsive Design */
+// Responsive design
 @media (max-width: 640px) {
   .main-menu-container {
     padding: var(--space-xl);
