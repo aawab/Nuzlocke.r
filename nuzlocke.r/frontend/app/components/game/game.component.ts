@@ -1048,4 +1048,28 @@ export class GameComponent implements OnInit {
         break;
     }
   }
+
+  getBossGradient(boss: GymLeader): string {
+    let typeColor: string;
+    
+    // If boss has a type and it's not "Rival", use the boss type
+    if (boss.type && boss.type !== 'Rival') {
+      typeColor = this.pokemonUtils.getTypeColor(boss.type);
+    } else {
+      // For rivals or bosses without types, use the first type of their first Pokemon
+      if (boss.pokemon && boss.pokemon.length > 0) {
+        const firstPokemon = boss.pokemon[0];
+        if (firstPokemon.pokemon.types && firstPokemon.pokemon.types.length > 0) {
+          typeColor = this.pokemonUtils.getTypeColor(firstPokemon.pokemon.types[0]);
+        } else {
+          typeColor = '#68a090'; // Default fallback color
+        }
+      } else {
+        typeColor = '#68a090'; // Default fallback color
+      }
+    }
+    
+    // Create an angled gradient from black to the type color
+    return `linear-gradient(135deg, #000000 0%, ${typeColor} 100%)`;
+  }
 } 

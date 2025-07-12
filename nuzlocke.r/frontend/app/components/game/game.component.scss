@@ -1953,9 +1953,29 @@
   padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border-subtle);
   transition: all var(--transition-fast);
+  position: relative;
+  
+  // Add overlay for better text readability
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    pointer-events: none;
+  }
 
   &:hover {
-    background: var(--elevated-bg);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    
+    &::before {
+      opacity: 1;
+    }
   }
 
   &:last-child {
@@ -1968,6 +1988,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-lg);
+    position: relative;
+    z-index: 1;
 
     .boss-trainer {
       display: flex;
@@ -2004,6 +2026,7 @@
           font-size: var(--font-base);
           font-weight: var(--font-medium);
           color: var(--text-primary);
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         }
 
         .trainer-meta {
@@ -2024,6 +2047,7 @@
         .trainer-location {
           color: var(--text-secondary);
           font-size: var(--font-sm);
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         }
       }
     }
@@ -2056,6 +2080,9 @@
   }
 
   .boss-actions {
+    position: relative;
+    z-index: 1;
+    
     .battle-btn {
       height: 32px;
       font-size: var(--font-xs);
