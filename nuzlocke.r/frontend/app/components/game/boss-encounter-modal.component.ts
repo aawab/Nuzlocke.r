@@ -58,7 +58,7 @@ export interface BossEncounterResult {
                 </div>
                 <div class="boss-pokemon-info">
                   <div class="pokemon-name">{{ formatPokemonName(bossPokemon.pokemon.name) }}</div>
-                  <div class="pokemon-level">Lv. {{ bossPokemon.level }}</div>
+                  <div class="pokemon-level">Lv. {{ (bossPokemon.level | number:'2.0-0') }}</div>
                   <div class="pokemon-types">
                     <span *ngFor="let type of bossPokemon.pokemon.types" 
                           class="type-badge type-{{ type.toLowerCase() }}">
@@ -347,6 +347,7 @@ export interface BossEncounterResult {
         color: var(--text-primary);
         margin-bottom: var(--space-xs);
         text-transform: capitalize;
+        line-height: 1.4;
       }
 
       .pokemon-level {

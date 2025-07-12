@@ -315,7 +315,7 @@
     .encounter-row {
       display: flex;
       align-items: center;
-      padding: var(--space-md) var(--space-md);
+      padding: 2px var(--space-md);
       border-bottom: 1px solid var(--border-subtle);
       transition: all var(--transition-fast);
 
@@ -349,11 +349,24 @@
             gap: var(--space-md);
 
             .pokemon-details {
+              height: 40px; /* Match form elements height */
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              gap: var(--space-sm);
+              width: 17ch; /* Fixed width for consistent positioning */
+              
               .pokemon-name {
                 font-size: var(--font-base);
                 font-weight: var(--font-medium);
                 color: var(--text-primary);
-                margin-bottom: 2px;
+                margin-bottom: 0;
+                line-height: 1.4;
+                width: 12ch; /* Fixed width for name - increased for font variations */
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex-shrink: 0;
               }
 
               .pokemon-level {
@@ -361,20 +374,21 @@
                 color: white;
                 font-size: 12px;
                 font-weight: var(--font-bold);
-                padding: 1px var(--space-xs);
+                padding: 1px 4px;
                 border-radius: var(--radius-sm);
                 text-align: center;
                 line-height: 1.1;
                 display: inline-block;
-                min-width: 24px;
+                white-space: nowrap;
+                flex-shrink: 0;
               }
             }
           }
 
           .encounter-status {
-            padding: var(--space-xs) var(--space-sm);
+            padding: 2px var(--space-xs);
             border-radius: var(--radius-sm);
-            font-size: var(--font-xs);
+            font-size: 10px;
             font-weight: var(--font-semibold);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -422,17 +436,24 @@
             gap: var(--space-md);
 
             .pokemon-details {
-              width: 12ch; /* Fixed width for consistent status box positioning */
+              width: 17ch; /* Fixed width for consistent positioning */
+              height: 40px; /* Match form elements height */
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              gap: var(--space-sm);
               
               .pokemon-name {
                 font-size: var(--font-base);
                 font-weight: var(--font-medium);
                 color: var(--text-primary);
-                margin-bottom: 2px;
+                margin-bottom: 0;
+                line-height: 1.4;
+                width: 12ch; /* Fixed width for name - increased for font variations */
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                width: 100%; /* Take full width of parent container */
+                flex-shrink: 0;
               }
 
               .pokemon-level {
@@ -440,20 +461,21 @@
                 color: white;
                 font-size: 12px;
                 font-weight: var(--font-bold);
-                padding: 1px var(--space-xs);
+                padding: 1px 4px;
                 border-radius: var(--radius-sm);
                 text-align: center;
                 line-height: 1.1;
                 display: inline-block;
-                min-width: 24px;
+                white-space: nowrap;
+                flex-shrink: 0;
               }
             }
           }
 
           .encounter-status {
-            padding: var(--space-xs) var(--space-sm);
+            padding: 2px var(--space-xs);
             border-radius: var(--radius-sm);
-            font-size: var(--font-xs);
+            font-size: 10px;
             font-weight: var(--font-semibold);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -481,12 +503,13 @@
           .encounter-form {
             display: flex;
             flex-direction: column;
-            gap: var(--space-lg);
+            gap: 0;
 
             .form-inputs-inline {
               display: flex;
               gap: var(--space-lg);
-              align-items: end;
+              align-items: center;
+              min-height: 48px;
 
               .route-group {
                 flex: 0 0 120px;
@@ -1033,6 +1056,7 @@
           font-weight: var(--font-semibold);
           color: var(--text-primary);
           margin-bottom: var(--space-md);
+          line-height: 1.4;
         }
 
         .pokemon-types {
@@ -1305,6 +1329,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding: var(--space-sm) 0;
+    line-height: 1.4;
   }
 
   .edit-name-btn {
@@ -1503,6 +1528,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 80px;
+            line-height: 1.4;
           }
 
           .pokemon-id {

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <span class="pokemon-level">Lv. {{ level }}</span>
+    <span class="pokemon-level">Lv. {{ (level | number:'2.0-0') }}</span>
   `,
   styles: [`
     .pokemon-level {

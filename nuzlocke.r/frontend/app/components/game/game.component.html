@@ -11,7 +11,7 @@
         @if (pokemon) {
           <div class="pokemon-icon clickable" (click)="showTeamPokemonDetails(pokemon)">
             <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="40"></app-pokemon-sprite>
-            <div class="pokemon-level">Lvl.{{ pokemon.level }}</div>
+            <div class="pokemon-level">Lvl.{{ (pokemon.level | number:'2.0-0') }}</div>
           </div>
         } @else {
           <div class="empty-slot">
@@ -67,7 +67,7 @@
                       <app-pokemon-sprite [pokemon]="routeEncounters()[route.id].pokemon" [size]="48"></app-pokemon-sprite>
                       <div class="pokemon-details">
                         <div class="pokemon-name">{{ routeEncounters()[route.id].nickname }}</div>
-                        <div class="pokemon-level">Lv. {{ routeEncounters()[route.id].level }}</div>
+                        <div class="pokemon-level">Lv. {{ (routeEncounters()[route.id].level | number:'2.0-0') }}</div>
                       </div>
                     </div>
                     <div class="encounter-status status-{{ routeEncounters()[route.id].status }}">
@@ -214,7 +214,7 @@
                 <div class="boss-team">
                   <div class="team-pokemon" *ngFor="let bossPokemon of boss.pokemon">
                     <app-pokemon-sprite [pokemon]="bossPokemon.pokemon" [size]="48"></app-pokemon-sprite>
-                    <div class="pokemon-level">Lv. {{ bossPokemon.level }}</div>
+                    <div class="pokemon-level">Lv. {{ (bossPokemon.level | number:'2.0-0') }}</div>
                   </div>
                 </div>
               </div>
@@ -296,7 +296,7 @@
         <div *ngFor="let pokemon of boxPokemon(); trackBy: trackByEncounterId" class="pokemon-card-detailed">
           <div class="pokemon-header">
             <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="40"></app-pokemon-sprite>
-            <div class="pokemon-level">Lvl.{{ pokemon.level }}</div>
+            <div class="pokemon-level">Lvl.{{ (pokemon.level | number:'2.0-0') }}</div>
           </div>
 
           <div class="pokemon-info">

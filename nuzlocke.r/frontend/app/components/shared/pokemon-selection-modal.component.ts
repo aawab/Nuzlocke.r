@@ -193,6 +193,7 @@ export interface PokemonSelectionResult {
         font-weight: var(--font-medium);
         color: var(--text-primary);
         margin-bottom: var(--space-xs);
+        line-height: 1.4;
       }
 
       .pokemon-id {

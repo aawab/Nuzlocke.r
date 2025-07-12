@@ -25,7 +25,7 @@ export interface TeamPokemonAction {
               {{ getTruncatedNickname() }}
             </div>
             <div class="pokemon-species-header">{{ pokemonUtils.formatPokemonName(pokemon.pokemon.name) }}</div>
-            <div class="pokemon-level-header">Lv. {{ pokemon.level }}</div>
+            <div class="pokemon-level-header">Lv. {{ (pokemon.level | number:'2.0-0') }}</div>
           </div>
           <button class="close-btn" (click)="closeModal()">×</button>
         </div>
