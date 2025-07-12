@@ -2,14 +2,23 @@ import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PokemonService } from '../../services/pokemon.service';
+import { PokemonUtilsService } from '../../services/pokemon-utils.service';
 import { Pokemon, PokemonEncounter, Route, EncounterStatus, GymLeader } from '../../models/pokemon.model';
 import { BossEncounterModalComponent, BossEncounterResult } from './boss-encounter-modal.component';
+import { PokemonSelectionModalComponent, PokemonSelectionResult } from '../shared/pokemon-selection-modal.component';
+import { TeamPokemonDetailModalComponent, TeamPokemonAction } from '../shared/team-pokemon-detail-modal.component';
 import { DEMO_BOSSES } from '../../data/bosses.constants';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, FormsModule, BossEncounterModalComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    BossEncounterModalComponent,
+    PokemonSelectionModalComponent,
+    TeamPokemonDetailModalComponent
+  ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
@@ -97,7 +106,8 @@ export class GameComponent implements OnInit {
   });
 
   constructor(
-    private pokemonService: PokemonService
+    private pokemonService: PokemonService,
+    public pokemonUtils: PokemonUtilsService
   ) {
     // Effect to update form when route changes
     effect(() => {
@@ -261,7 +271,7 @@ export class GameComponent implements OnInit {
         location: 'Starter*',
         route: 'starter',
         nature: 'Modest',
-        ability: this.formatAbilityName(bulbasaur.abilities[0]) || 'Overgrow',
+        ability: this.pokemonUtils.formatAbilityName(bulbasaur.abilities[0]) || 'Overgrow',
         caught: true,
         dateEncountered: new Date()
       },
@@ -275,7 +285,7 @@ export class GameComponent implements OnInit {
         location: 'Route 101',
         route: 'route-101',
         nature: 'Jolly',
-        ability: this.formatAbilityName(pikachu.abilities[0]) || 'Static',
+        ability: this.pokemonUtils.formatAbilityName(pikachu.abilities[0]) || 'Static',
         caught: true,
         dateEncountered: new Date()
       }
@@ -296,7 +306,7 @@ export class GameComponent implements OnInit {
         location: 'Cherrygrove City',
         route: 'cherrygrove-city',
         nature: 'Adamant',
-        ability: this.formatAbilityName(gyarados.abilities[0]) || 'Intimidate',
+        ability: this.pokemonUtils.formatAbilityName(gyarados.abilities[0]) || 'Intimidate',
         caught: true,
         dateEncountered: new Date()
       },
@@ -310,7 +320,7 @@ export class GameComponent implements OnInit {
         location: 'Route 30',
         route: 'route-30',
         nature: 'Calm',
-        ability: this.formatAbilityName(psyduck.abilities[0]) || 'Damp',
+        ability: this.pokemonUtils.formatAbilityName(psyduck.abilities[0]) || 'Damp',
         caught: true,
         dateEncountered: new Date()
       }
@@ -504,36 +514,29 @@ export class GameComponent implements OnInit {
     this.boxPokemonSignal.update(box => box.filter(p => p.id !== encounterId));
   }
 
-  // Utility methods
+  // Utility methods delegated to PokemonUtilsService
   private generateId(): string {
-    return 'encounter-' + Math.random().toString(36).substr(2, 9);
+    return this.pokemonUtils.generateId();
   }
 
   getTypeColor(type: string): string {
-    return this.pokemonService.getPokemonTypeColor(type);
+    return this.pokemonUtils.getTypeColor(type);
   }
 
   getStatusColor(status: EncounterStatus): string {
-    switch (status) {
-      case EncounterStatus.ALIVE: return 'status-alive';
-      case EncounterStatus.DEAD: return 'status-dead';
-      case EncounterStatus.BOXED: return 'status-boxed';
-      case EncounterStatus.RELEASED: return 'status-released';
-      default: return 'status-unknown';
-    }
+    return this.pokemonUtils.getStatusColor(status);
   }
 
   getStatColor(stat: number): string {
-    return this.pokemonService.getStatColor(stat);
+    return this.pokemonUtils.getStatColor(stat);
   }
 
   formatPokemonName(name: string): string {
-    return this.pokemonService.formatPokemonName(name);
+    return this.pokemonUtils.formatPokemonName(name);
   }
 
   formatAbilityName(ability: string): string {
-    if (!ability) return '';
-    return ability.charAt(0).toUpperCase() + ability.slice(1);
+    return this.pokemonUtils.formatAbilityName(ability);
   }
 
   // Track by functions
@@ -586,7 +589,7 @@ export class GameComponent implements OnInit {
         location: route.name,
         route: route.id,
         nature: 'Hardy',
-        ability: this.formatAbilityName(pokemon.abilities[0]) || 'Unknown',
+        ability: this.pokemonUtils.formatAbilityName(pokemon.abilities[0]) || 'Unknown',
         caught: true,
         dateEncountered: new Date()
       };
@@ -689,13 +692,13 @@ export class GameComponent implements OnInit {
       id: this.generateId(),
       pokemonId: form.selectedPokemon.id,
       pokemon: form.selectedPokemon,
-      nickname: form.nickname || this.formatPokemonName(form.selectedPokemon.name),
+              nickname: form.nickname || this.pokemonUtils.formatPokemonName(form.selectedPokemon.name),
       level: form.level,
       status: status,
       location: route.name,
       route: route.id,
       nature: form.nature || 'Hardy', // Use form nature or default
-              ability: this.formatAbilityName(form.selectedPokemon.abilities[0]) || 'Unknown',
+              ability: this.pokemonUtils.formatAbilityName(form.selectedPokemon.abilities[0]) || 'Unknown',
       caught: status === EncounterStatus.ALIVE,
       dateEncountered: new Date()
     };
@@ -994,6 +997,53 @@ export class GameComponent implements OnInit {
       // This would typically involve creating new encounters for caught Pokemon
       // For now, we'll just log it
       console.log('Boss Pokemon caught:', result.caughtPokemon);
+    }
+  }
+
+  // New modal event handlers
+  onPokemonSelectionComplete(result: PokemonSelectionResult): void {
+    const encounter: PokemonEncounter = {
+      id: this.generateId(),
+      pokemonId: result.pokemon.id,
+      pokemon: result.pokemon,
+      nickname: result.nickname,
+      level: result.level,
+      status: result.status,
+      location: result.route.name,
+      route: result.route.id,
+      nature: result.nature,
+      ability: this.pokemonUtils.formatAbilityName(result.pokemon.abilities[0]) || 'Unknown',
+      caught: result.status === EncounterStatus.ALIVE,
+      dateEncountered: new Date()
+    };
+
+    // Add to route encounters
+    this.routeEncountersSignal.update(encounters => ({
+      ...encounters,
+      [result.route.id]: encounter
+    }));
+
+    // Auto-place in team or box
+    this.autoPlaceEncounter(encounter);
+  }
+
+  onTeamPokemonAction(action: TeamPokemonAction): void {
+    switch (action.type) {
+      case 'kill':
+        this.updateEncounterStatus(action.pokemon.id, EncounterStatus.DEAD);
+        this.selectedTeamPokemonSignal.set(null);
+        break;
+      case 'release':
+        this.updateEncounterStatus(action.pokemon.id, EncounterStatus.RELEASED);
+        this.selectedTeamPokemonSignal.set(null);
+        break;
+      case 'moveToBox':
+        this.movePokemonToBox(action.pokemon.id);
+        this.selectedTeamPokemonSignal.set(null);
+        break;
+      case 'updateNickname':
+        this.updatePokemonNickname(action.pokemon.id, action.data.nickname);
+        break;
     }
   }
 } 

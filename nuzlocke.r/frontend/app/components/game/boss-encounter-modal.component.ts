@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GymLeader, PokemonEncounter } from '../../models/pokemon.model';
+import { PokemonUtilsService } from '../../services/pokemon-utils.service';
 
 export interface BossEncounterResult {
   wins: number;
@@ -753,6 +754,8 @@ export class BossEncounterModalComponent {
   readonly battleOutcome = this.battleOutcomeSignal.asReadonly();
   readonly encounterResults = this.encounterResultsSignal.asReadonly();
 
+  constructor(private pokemonUtils: PokemonUtilsService) {}
+
   getTrainerSprite(): string {
     const spriteMap: { [key: string]: string } = {
       'Roxanne': '/trainers/roxanne-gen6.png',
@@ -763,9 +766,7 @@ export class BossEncounterModalComponent {
   }
 
   formatPokemonName(name: string): string {
-    return name.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    return this.pokemonUtils.formatPokemonName(name);
   }
 
   setBattleOutcome(outcome: 'win' | 'loss'): void {
