@@ -1947,163 +1947,187 @@
 }
 
 // Boss encounter styles
-.boss-list {
-  .boss-row {
+.boss-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: var(--elevated-bg);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .boss-info {
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
-    padding: var(--space-sm) var(--space-md);
-    border-bottom: 1px solid var(--border-subtle);
-    transition: all var(--transition-fast);
+    gap: var(--space-lg);
 
-    &:hover {
-      background: var(--elevated-bg);
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    .boss-info {
-      flex: 1;
-      min-width: 0;
+    .boss-trainer {
       display: flex;
       align-items: center;
       gap: var(--space-lg);
-
-      .boss-trainer {
-        display: flex;
-        align-items: center;
-        gap: var(--space-lg);
+      
+      .trainer-sprite {
+        flex-shrink: 0;
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        margin-top: -20px;
         
-        .trainer-sprite {
-          flex-shrink: 0;
+        .trainer-image {
           width: 120px;
-          height: 120px;
-          overflow: hidden;
-          margin-top: -20px;
-          
-          .trainer-image {
-            width: 120px;
-            height: 180px;
-            object-fit: cover;
-            object-position: center top;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
-          }
-        }
-
-        .trainer-details {
-          .trainer-name {
-            font-size: var(--font-base);
-            font-weight: var(--font-medium);
-            color: var(--text-primary);
-            margin-bottom: 2px;
-          }
-
-          .trainer-meta {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            margin-bottom: 2px;
-
-
-
-            .trainer-badge {
-              background: var(--accent-primary);
-              color: white;
-              padding: var(--space-xs) var(--space-sm);
-              border-radius: var(--radius-sm);
-              font-size: var(--font-xs);
-              font-weight: var(--font-semibold);
-            }
-          }
-
-          .trainer-location {
-            color: var(--text-secondary);
-            font-size: var(--font-sm);
-          }
+          height: 180px;
+          object-fit: cover;
+          object-position: center top;
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
         }
       }
 
-      .boss-team {
-        display: flex;
-        gap: var(--space-md);
-        
-        .team-pokemon {
+      .trainer-details {
+        .trainer-header {
           display: flex;
-          flex-direction: column;
           align-items: center;
-          
+          gap: var(--space-md);
+          margin-bottom: var(--space-xs);
+        }
 
+        .trainer-name {
+          font-size: var(--font-base);
+          font-weight: var(--font-medium);
+          color: var(--text-primary);
+        }
 
-          .pokemon-level {
+        .trainer-meta {
+          display: flex;
+          align-items: center;
+          gap: var(--space-sm);
+
+          .trainer-badge {
             background: var(--accent-primary);
             color: white;
-            font-size: 12px;
-            font-weight: var(--font-bold);
-            padding: 1px var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
             border-radius: var(--radius-sm);
-            text-align: center;
-            line-height: 1.1;
-            display: inline-block;
-            min-width: 24px;
+            font-size: var(--font-xs);
+            font-weight: var(--font-semibold);
           }
+        }
+
+        .trainer-location {
+          color: var(--text-secondary);
+          font-size: var(--font-sm);
         }
       }
     }
 
-    .boss-actions {
-      .battle-btn {
-        height: 32px;
-        font-size: var(--font-xs);
-        font-weight: var(--font-semibold);
-        padding: 0 var(--space-sm);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-subtle);
-        cursor: pointer;
-        transition: all var(--transition-fast);
+    .boss-team {
+      display: flex;
+      gap: var(--space-md);
+      
+      .team-pokemon {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        text-align: center;
-        white-space: nowrap;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        background: var(--elevated-bg);
-        color: var(--text-primary);
+        
 
-        &::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 0;
-          height: 0;
-          background: white;
-          border-radius: 50%;
-          transform: translate(-50%, -50%) scale(0);
-          opacity: 0;
-          transition: all var(--transition-fast);
+
+        .pokemon-level {
+          background: var(--accent-primary);
+          color: white;
+          font-size: 12px;
+          font-weight: var(--font-bold);
+          padding: 1px var(--space-xs);
+          border-radius: var(--radius-sm);
+          text-align: center;
+          line-height: 1.1;
+          display: inline-block;
+          min-width: 24px;
         }
+      }
+    }
+  }
+
+  .boss-actions {
+    .battle-btn {
+      height: 32px;
+      font-size: var(--font-xs);
+      font-weight: var(--font-semibold);
+      padding: 0 var(--space-sm);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      background: var(--elevated-bg);
+      color: var(--text-primary);
+
+      &.large-battle-btn {
+        width: 72px;
+        height: 72px;
+        font-size: 28px;
+        border-radius: var(--radius-lg);
+        background: var(--elevated-bg);
+        border: 2px solid var(--border-subtle);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-md);
 
         &:hover {
-          background: var(--card-bg);
-          border-color: var(--border-strong);
-          transform: translateY(-2px) scale(1.05);
+          transform: translateY(-3px) scale(1.1);
           box-shadow: var(--shadow-lg);
-          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-
-          &::before {
-            opacity: 0.1;
-            transform: scale(1);
-          }
+          background: #E0302A;
+          border-color: #E0302A;
+          color: white;
         }
 
         &:active {
-          transform: translateY(0);
+          transform: translateY(-1px) scale(1.05);
         }
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+        transition: all var(--transition-fast);
+      }
+
+      &:hover {
+        background: var(--card-bg);
+        border-color: var(--border-strong);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: var(--shadow-lg);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+
+        &::before {
+          opacity: 0.1;
+          transform: scale(1);
+        }
+      }
+
+      &:active {
+        transform: translateY(0);
       }
     }
   }
