@@ -244,6 +244,70 @@ export class GameComponent implements OnInit {
         ability: 'Intimidate',
         caught: true,
         dateEncountered: new Date()
+      },
+      {
+        id: 'demo-box-2',
+        pokemonId: 405,
+        pokemon: {
+          id: 405,
+          name: 'Luxray',
+          types: ['Electric'],
+          sprites: {
+            front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/405.png',
+            front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/405.png',
+            back_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/405.png',
+            back_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/405.png',
+            official_artwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/405.png'
+          },
+          baseStats: { hp: 80, attack: 120, defense: 79, specialAttack: 95, specialDefense: 79, speed: 70 },
+          abilities: ['Rivalry', 'Intimidate', 'Guts'],
+          height: 14,
+          weight: 420,
+          species: 'Gleam Eyes Pokémon',
+          flavorText: 'It has eyes that can see through anything.',
+          generation: 'generation-iv'
+        },
+        nickname: 'Thunder',
+        level: 38,
+        status: EncounterStatus.BOXED,
+        location: 'Route 222',
+        route: 'route-222',
+        nature: 'Adamant',
+        ability: 'Intimidate',
+        caught: true,
+        dateEncountered: new Date()
+      },
+      {
+        id: 'demo-box-3',
+        pokemonId: 6,
+        pokemon: {
+          id: 6,
+          name: 'Charizard',
+          types: ['Fire', 'Flying'],
+          sprites: {
+            front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png',
+            front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png',
+            back_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png',
+            back_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png',
+            official_artwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png'
+          },
+          baseStats: { hp: 78, attack: 84, defense: 78, specialAttack: 109, specialDefense: 85, speed: 100 },
+          abilities: ['Blaze', 'Solar Power'],
+          height: 17,
+          weight: 905,
+          species: 'Flame Pokémon',
+          flavorText: 'It spits fire that is hot enough to melt boulders.',
+          generation: 'generation-i'
+        },
+        nickname: 'Blaze',
+        level: 42,
+        status: EncounterStatus.BOXED,
+        location: 'Pallet Town',
+        route: 'pallet-town',
+        nature: 'Modest',
+        ability: 'Blaze',
+        caught: true,
+        dateEncountered: new Date()
       }
     ];
 
@@ -1048,6 +1112,38 @@ export class GameComponent implements OnInit {
         break;
     }
   }
+
+  getTypeGradient(type: string): string {
+    if (!type) {
+      return 'linear-gradient(135deg, #2c2c2c 0%, #68a090 100%)'; // Default fallback
+    }
+    
+    const typeColor = this.pokemonUtils.getTypeColor(type);
+    
+    // Create gradient from dark background to type color
+    const backgroundColor = '#2c2c2c'; // Dark background color
+    const midColor = this.darkenColor(typeColor, 0.1);
+    
+    return `linear-gradient(135deg, ${backgroundColor} 0%, ${midColor} 50%, ${typeColor} 100%)`;
+  }
+
+  private darkenColor(color: string, amount: number): string {
+    // Convert hex to RGB
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Darken by the amount (0-1)
+    const darkenedR = Math.round(r * (1 - amount));
+    const darkenedG = Math.round(g * (1 - amount));
+    const darkenedB = Math.round(b * (1 - amount));
+    
+    // Convert back to hex
+    return `#${darkenedR.toString(16).padStart(2, '0')}${darkenedG.toString(16).padStart(2, '0')}${darkenedB.toString(16).padStart(2, '0')}`;
+  }
+
+
 
   getBossGradient(boss: GymLeader): string {
     let typeColor: string;

@@ -1009,16 +1009,21 @@
 
   .pokemon-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--space-lg);
+    overflow: visible;
 
     .pokemon-card-detailed {
       background: var(--surface-bg);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: var(--space-lg);
+      padding: 0;
+      padding-bottom: var(--space-sm);
       transition: all var(--transition-smooth);
       box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: visible; // Allow type badges to extend above and nooks to overflow
+      margin-top: 16px; // Make space for type badges
 
       &:hover {
         border-color: var(--accent-primary);
@@ -1026,48 +1031,146 @@
         box-shadow: var(--shadow-lg);
       }
 
-      .pokemon-header {
+      .pokemon-type-badges-top {
+        position: absolute;
+        top: -16px;
+        left: var(--space-lg);
         display: flex;
-        justify-content: space-between;
+        gap: var(--space-xs);
+        z-index: 15;
+      }
+
+      .pokemon-gradient-bar {
+        height: 60px;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        position: relative;
+        overflow: visible;
+        display: flex;
         align-items: center;
+        justify-content: space-between;
+        padding: 0;
         margin-bottom: var(--space-md);
 
+        .pokemon-name-inline {
+          position: absolute;
+          left: var(--space-lg);
+          display: flex;
+          align-items: center;
+          gap: var(--space-xs);
+          
+          .pokemon-name {
+            font-size: var(--font-lg);
+            font-weight: var(--font-bold);
+            color: white;
+            margin: 0;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+            transition: all var(--transition-fast);
 
+            &:hover {
+              transform: scale(1.05);
+              text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+            }
+          }
 
-        .pokemon-level {
-          background: var(--accent-primary);
-          color: white;
-          font-size: var(--font-sm);
-          font-weight: var(--font-bold);
+          .pokemon-name-input {
+            font-size: var(--font-lg);
+            font-weight: var(--font-bold);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
+            padding: var(--space-xs) var(--space-sm);
+            color: white;
+            width: 150px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+
+            &:focus {
+              outline: none;
+              border-color: rgba(255, 255, 255, 0.8);
+              background: rgba(255, 255, 255, 0.3);
+            }
+
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.7);
+            }
+          }
+        }
+
+        .pokemon-level-nook {
+          position: absolute;
+          right: var(--space-md);
+          bottom: -20px;
+          background: var(--surface-bg);
           padding: var(--space-xs) var(--space-sm);
-          border-radius: var(--radius-sm);
-          text-align: center;
-          line-height: 1.1;
-          display: inline-block;
-          min-width: 32px;
+          border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+          z-index: 15;
+          // Remove all borders and shadows for seamless blending
+          
+          .pokemon-level-display {
+            .level-text {
+              font-size: var(--font-sm);
+              font-weight: var(--font-bold);
+              color: var(--text-primary);
+              letter-spacing: 0.5px;
+            }
+          }
+        }
+
+        .pokemon-sprite-large {
+          position: absolute;
+          right: var(--space-md);
+          top: 45%;
+          z-index: 10;
+          padding: var(--space-xs) var(--space-sm);
+          width: 60px;
+          transform: translateY(-50%);
+          animation: pokemonFloat 3s ease-in-out infinite;
+          filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: visible;
+          
+          ::ng-deep .pokemon-sprite {
+            background: transparent;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            .sprite-image {
+              width: 100px;
+              height: 100px;
+              object-fit: contain;
+              object-position: center;
+              image-rendering: pixelated;
+              image-rendering: -moz-crisp-edges;
+              image-rendering: crisp-edges;
+            }
+          }
+        }
+
+        @keyframes pokemonFloat {
+          0%, 100% { 
+            transform: translateY(-50%) translateY(-5px); 
+          }
+          50% { 
+            transform: translateY(-50%) translateY(-10px); 
+          }
         }
       }
 
       .pokemon-info {
-        margin-bottom: var(--space-lg);
-
-        .pokemon-name {
-          font-size: var(--font-base);
-          font-weight: var(--font-semibold);
-          color: var(--text-primary);
-          margin-bottom: var(--space-md);
-          line-height: 1.4;
-        }
-
-        .pokemon-types {
-          display: flex;
-          gap: var(--space-xs);
-          flex-wrap: wrap;
-        }
+        margin-bottom: var(--space-md);
+        padding: 0 var(--space-lg);
+        padding-top: var(--space-lg); // Reduced padding since name nook is removed
       }
 
       .pokemon-stats {
-        margin-bottom: var(--space-lg);
+        margin-bottom: var(--space-md);
+        padding: 0 var(--space-lg);
 
         .stat-row {
           display: flex;
@@ -1134,16 +1237,28 @@
         }
       }
 
-            .pokemon-actions {
+      .pokemon-meta {
+        margin-bottom: var(--space-md);
+        padding: 0 var(--space-lg);
+
+        .met-location {
+          font-size: var(--font-sm);
+          color: var(--text-secondary);
+          font-style: italic;
+        }
+      }
+
+      .pokemon-actions {
         display: flex;
         gap: var(--space-sm);
         margin-top: var(--space-md);
+        padding: -20px var(--space-xs);
 
         .btn {
           height: 32px;
           font-size: var(--font-xs);
           font-weight: var(--font-semibold);
-          padding: 0 var(--space-sm);
+          padding:  var(--space-xs);
           border-radius: var(--radius-md);
           border: 1px solid;
           cursor: pointer;
@@ -1151,11 +1266,18 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          gap: var(--space-xs);
           position: relative;
           overflow: hidden;
           text-align: center;
           white-space: nowrap;
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+
+          .btn-icon {
+            width: 16px;
+            height: 16px;
+            transition: all var(--transition-fast);
+          }
 
                       &:hover {
               transform: translateY(-2px) scale(1.05);
@@ -1164,10 +1286,8 @@
 
               .btn-icon {
                 transform: scale(1.1);
-                width: 22px;
-                height: 22px;
-                filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
-                font-weight: bold;
+                width: 18px;
+                height: 18px;
               }
 
               &::before {
@@ -2001,16 +2121,17 @@
         width: 120px;
         height: 120px;
         overflow: hidden;
-        margin-top: -20px;
+        margin-top: -5px;
         
         .trainer-image {
           width: 120px;
-          height: 180px;
+          height: 150px;
           object-fit: cover;
-          object-position: center top;
+          object-position: center center;
           image-rendering: -webkit-optimize-contrast;
           image-rendering: crisp-edges;
           image-rendering: pixelated;
+          transform: translateY(-10px);
         }
       }
 

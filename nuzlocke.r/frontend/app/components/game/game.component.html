@@ -400,13 +400,18 @@
 
       <div class="pokemon-grid">
         <div *ngFor="let pokemon of boxPokemon(); trackBy: trackByEncounterId" class="pokemon-card-detailed">
-          <div class="pokemon-header">
-            <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="40"></app-pokemon-sprite>
-            <div class="pokemon-level">Lvl.{{ (pokemon.level | number:'2.0-0') }}</div>
+          <!-- Type badges positioned at the top left corner with half extending above -->
+          <div class="pokemon-type-badges-top">
+            <app-pokemon-type-badge 
+              *ngFor="let type of pokemon.pokemon.types" 
+              [type]="type">
+            </app-pokemon-type-badge>
           </div>
 
-          <div class="pokemon-info">
-            <div class="pokemon-name-display">
+          <!-- Gradient bar background based on first type with name and level -->
+          <div class="pokemon-gradient-bar" [style.background]="getTypeGradient(pokemon.pokemon.types[0])">
+            <!-- Name directly in the gradient bar -->
+            <div class="pokemon-name-inline">
               @if (editingBoxNickname() === pokemon.id) {
                 <input type="text" 
                        [value]="pokemon.nickname" 
@@ -417,21 +422,27 @@
                        class="pokemon-name-input"
                        [placeholder]="formatPokemonName(pokemon.pokemon.name)">
               } @else {
-                <h3 class="pokemon-name">
+                <h3 class="pokemon-name" (click)="startEditingBoxNickname(pokemon.id)">
                   {{ pokemon.nickname || formatPokemonName(pokemon.pokemon.name) }}
                 </h3>
-                <button class="edit-name-btn" (click)="startEditingBoxNickname(pokemon.id)" title="Edit nickname">
-                  ✏️
-                </button>
               }
             </div>
-            <div class="pokemon-types">
-              <app-pokemon-type-badge 
-                *ngFor="let type of pokemon.pokemon.types" 
-                [type]="type">
-              </app-pokemon-type-badge>
+
+            <!-- Level nook on the right -->
+            <div class="pokemon-level-nook">
+              <div class="pokemon-level-display">
+                <span class="level-text">Lvl. {{ (pokemon.level | number:'2.0-0') }}</span>
+              </div>
+            </div>
+
+            <!-- Large sprite centered above level nook -->
+            <div class="pokemon-sprite-large">
+              <app-pokemon-sprite [pokemon]="pokemon.pokemon" [size]="100"></app-pokemon-sprite>
             </div>
           </div>
+
+          <!-- Pokemon info below (keeping other content) -->
+          <div class="pokemon-info">
 
           <div class="pokemon-stats">
             <div class="stat-row">
