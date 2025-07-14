@@ -1256,11 +1256,13 @@ input[type="number"] {
       .pokemon-meta {
         margin-bottom: var(--space-md);
         padding: 0 var(--space-lg);
-
+        justify-content: center;
+        display: flex;
+        
         .met-location {
           font-size: var(--font-sm);
           color: var(--text-secondary);
-          font-style: italic;
+          font-style: italic;;
         }
       }
 
@@ -1327,6 +1329,19 @@ input[type="number"] {
           }
 
           &.btn-team {
+            background: var(--accent-secondary);
+            color: white;
+            border-color: var(--accent-secondary);
+
+            &:hover {
+              background: #30B050;
+              border-color: #30B050;
+              box-shadow: 0 8px 25px rgba(52, 199, 89, 0.3);
+              transform: translateY(-2px) scale(1.05);
+              text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+            }
+          }
+          &.btn-details {
             background: var(--accent-secondary);
             color: white;
             border-color: var(--accent-secondary);
