@@ -304,7 +304,9 @@
               <div class="boss-info">
                 <div class="boss-trainer">
                   <div class="trainer-sprite">
-                    <img [src]="boss.sprite" [alt]="boss.name" class="trainer-image">
+                    <ng-container>
+                      <img [src]="boss.sprite" [alt]="boss.name" class="trainer-image">
+                    </ng-container>z
                   </div>
                   <div class="trainer-details">
                     <div class="trainer-header">

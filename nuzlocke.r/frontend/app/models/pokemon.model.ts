@@ -152,6 +152,11 @@ export interface GymLeader {
   levelCap: number;
   badgeName: string;
   sprite: string;
+  sprites?: {
+    tate: string;
+    liza: string;
+  };
+  combinedSprite?: boolean;
 }
 
 export interface BossPokemon {

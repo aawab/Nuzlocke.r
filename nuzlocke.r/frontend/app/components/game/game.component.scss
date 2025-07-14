@@ -867,6 +867,21 @@
   }
 }
 
+/* Hide number input arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Adjust appearance per browser */
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+}
+
+
 /* Box Tab Styling */
 .box-tab {
   .box-header {
@@ -1148,6 +1163,7 @@
               image-rendering: pixelated;
               image-rendering: -moz-crisp-edges;
               image-rendering: crisp-edges;
+              image-rendering: -webkit-optimize-contrast;
             }
           }
         }
@@ -2131,9 +2147,19 @@
           image-rendering: -webkit-optimize-contrast;
           image-rendering: crisp-edges;
           image-rendering: pixelated;
-          transform: translateY(-10px);
+          transform: translateY(-5px);
+
+          // &[src*="pokemonshowdown.com"] {
+          //   animation: bossFloat 2.5s ease-in-out infinite, bossPulse 4s ease-in-out infinite;
+          // }
+        }
+
+        @keyframes bossFloat {
+          0%, 100% { transform: translateY(20px); }
+          50% { transform: translateY(0px); }
         }
       }
+    }
 
       .trainer-details {
         .trainer-header {
@@ -2279,7 +2305,7 @@
       }
     }
   }
-}
+
 
 /* Nuzlocke Rules Content */
 .nuzlocke-content {
