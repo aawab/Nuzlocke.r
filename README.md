@@ -4,7 +4,7 @@ A Pokemon Nuzlocke planner featuring team optimization tools and AI-driven battl
 
 ## Overview
 
-Nuzlocke.r is a Pokemon Nuzlocke challenge tracking with route-based encounter management, real-time team statistics, and comprehensive run analytics. Built with Angular and Django to provide seamless Pokemon tracking across multiple challenge runs.
+Nuzlocke.r is a Pokemon Nuzlocke challenge tracking with route-based encounter management, real-time team statistics, and comprehensive run analytics. 
 
 ![Nuzlocke.r Dashboard](./public/screenshots/dashboard.png)
 
