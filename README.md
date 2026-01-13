@@ -1,6 +1,6 @@
 # Nuzlocke.r 🎮⚡
 
-A Pokemon Nuzlocke planner featuring team optimization tools and AI-driven battle analysis
+A Pokemon Nuzlocke planner featuring team optimization tools and ML-driven battle analysis
 
 ## Overview
 
