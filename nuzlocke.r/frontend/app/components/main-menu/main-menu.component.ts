@@ -39,9 +39,11 @@ export class MainMenuComponent {
 
   loadGame(): void {
     // TODO: Implement load game functionality
+    // TODO: Also implement account system with cloud saves or local game saves for non account holders
   }
 
   openGuides(): void {
     // TODO: Implement guides functionality
+    // MAYBE scratch??? not sure if I want this anymore since I'm building the battle prediction model with pytorch
   }
 } 
